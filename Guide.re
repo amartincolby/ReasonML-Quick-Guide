@@ -53,11 +53,14 @@ let blockScope = () => {
 
 /*** as ***/
 
-/* `as` is a somewhat messy, polymorphic verb. Broadly, it defines a binding. Where a `let` binding binds a right-hand value to a left-hand identifier, `as` binds left to right. */
+/* `as` is a somewhat messy word in Reason. Broadly, it defines a binding. Where a
+    `let` binding binds a right-hand value to a left-hand identifier, `as` binds left
+    to right. Further, `as` does not actually bind values. It binds patterns. */
 
-let assy = (x) => {
-    x;
-}
+// Example here
+
+/* `as` is also used in object assignment in a somewhat similar fashion. See the below
+    section on objects to see an explanation. */
 
 /*** Destructuring ***/
 
@@ -419,12 +422,12 @@ let toyotaSupra: car({. accelerate: unit => unit, brake: unit => unit, checkSpee
     pub checkSpeed = speed^;
 };
 
-/* The above example is illustrative. A warning underlines the speed val because
-    objects implicitly contain `this`. `this` represents the object itself and
-    not simply its behaviors or values. The warning will go away either through
-    the use of a private method requiring `this`, such as `this#privateMethod`, or
-    through assigning `this` as a casual variable. The latter can be achieved
-    with the `as` keyword.
+/* The above example is illustrative of the earlier point about `as` vis-a-vis objects.
+    A warning underlines the speed val because objects implicitly contain `this`.
+    `this` represents the object itself and not simply its behaviors or values. The
+    warning will go away either through the use of a private method requiring `this`,
+    such as `this#privateMethod`, or through assigning `this` as a casual variable.
+    The latter can be achieved with the `as` keyword.
     
     Append `as _this;` after toyotaSupra's opening bracket to clear the warning. */
 
