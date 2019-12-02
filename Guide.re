@@ -3,6 +3,26 @@
 // Line comments begin with a double slash.
 // Expressions do not need to be terminated with a semicolon, but it is best practice;
 
+/*** A note on types ***/
+
+/* ReasonML makes little distinction between primitive types and what could be called
+    user-defined types or structs. They are simply values represented by symbols. */
+
+/* The below type is an abstract type, meaning that the symbol has no structure attached
+    to it. Any program using this type does not need to know its structure just so long
+    as references to the type are consistent. Basically, programs can use symbols without
+    knowing what they mean. */
+
+type kwyjibo;
+
+/* The below type is a concrete type with a defined structure. These will appear frequently
+    since any record must have an associated type. */
+
+type thing = {
+    value1: string,
+    value2: int,
+};
+
 /*----------------------------------------------
  * Variables, functions, and bindings
  *----------------------------------------------
@@ -20,6 +40,10 @@ let x = 5;
 
 // Functions will likewise infer argument and return types.
 let add = (a, b) => a + b;
+
+// Types can be functions
+type intFunction = (int, int) => int;
+let intAdder : intFunction = (x, y) => x + y;
 
 // Let bindings are block scoped with `{}`.
 if (true) {
@@ -244,6 +268,10 @@ let myString2 = "A world without string is chaos.";
 5 * 2 * 3;      // - : int = 30
 8 / 2;          // - : int = 4
 
+// Integer division will round results
+8 / 3           // - : int = 2
+8 / 5           // - : int = 1
+
 
 /*** > Float ***/
 // Floating point operators have a `.` suffix.
@@ -265,9 +293,9 @@ let polishAdder = (a, b) => (+) (a, b);
 // Operators are just functions that can be reassigned.
 let (+) = (a, b) => a * b;
 
-// Custom operators can be any of the reserved characters.
-let ($) = (a, b) => a + b + 3;
-print_int(3 $ 4);
+// Custom operators can use any of the reserved characters.
+let ($) = (a, b) => a - b + 3;
+4 $ 3   // - : int = 4
 
 
 /*** > Tuple ***/

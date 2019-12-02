@@ -14,12 +14,12 @@ This guide started as an extension of a more lightweight guide written by ["Seth
 
 I also want to bring note to the small but dedicated group over at the [ReasonML forums](https://reasonml.chat/). Go there. Just say HI for Pete's sake. Engage! Life springs from activity, and we need more activity, because the technology itself is solid.
 
-# Further Reading
+# Further Information
+- [Reason Package Index, aka Redex](https://redex.github.io/)
 - [Official Reason Docs](https://reasonml.github.io/docs/en/what-and-why)
-- [Exploring ReasonML](http://reasonmlhub.com/exploring-reasonml/toc.html) *Perhaps the best docs currently available*
 - [Official BuckleScript Docs](https://bucklescript.github.io/docs/en/what-why)
+- [Exploring ReasonML](http://reasonmlhub.com/exploring-reasonml/toc.html) *Perhaps the best docs currently available*
 - [Try Reason](https://reasonml.github.io/en/try)
-- [Get Started with Reason by Nik Graf](https://egghead.io/courses/get-started-with-reason)
 - [Real World OCaml](http://dev.realworldocaml.org/toc.html)
 
 # The Guide
@@ -35,6 +35,26 @@ The below text is valid ReasonML code.
    and end with star-slash. */
 // Line comments begin with a double slash.
 // Expressions do not need to be terminated with a semicolon, but it is best practice;
+
+/*** A note on types ***/
+
+/* ReasonML makes little distinction between primitive types and what could be called
+    user-defined types or structs. They are simply values represented by symbols. */
+
+/* The below type is an abstract type, meaning that the symbol has no structure attached
+    to it. Any program using this type does not need to know its structure just so long
+    as references to the type are consistent. Basically, programs can use symbols without
+    knowing what they mean. */
+
+type kwyjibo;
+
+/* The below type is a concrete type with a defined structure. These will appear frequently
+    since any record must have an associated type. */
+
+type thing = {
+    value1: string,
+    value2: int,
+};
 
 /*----------------------------------------------
  * Variables, functions, and bindings
@@ -53,6 +73,10 @@ let x = 5;
 
 // Functions will likewise infer argument and return types.
 let add = (a, b) => a + b;
+
+// Types can be functions
+type intFunction = (int, int) => int;
+let intAdder : intFunction = (x, y) => x + y;
 
 // Let bindings are block scoped with `{}`.
 if (true) {
@@ -86,11 +110,14 @@ let blockScope = () => {
 
 /*** as ***/
 
-/* `as` is a somewhat messy, polymorphic verb. Broadly, it defines a binding. Where a `let` binding binds a right-hand value to a left-hand identifier, `as` binds left to right. */
+/* `as` is a somewhat messy word in Reason. Broadly, it defines a binding. Where a
+    `let` binding binds a right-hand value to a left-hand identifier, `as` binds left
+    to right. Further, `as` does not actually bind values. It binds patterns. */
 
-let assy = (x) => {
-    x;
-}
+// Example here
+
+/* `as` is also used in object assignment in a somewhat similar fashion. See the below
+    section on objects to see an explanation. */
 
 /*** Destructuring ***/
 
@@ -274,6 +301,10 @@ let myString2 = "A world without string is chaos.";
 5 * 2 * 3;      // - : int = 30
 8 / 2;          // - : int = 4
 
+// Integer division will round results
+8 / 3           // - : int = 2
+8 / 5           // - : int = 1
+
 
 /*** > Float ***/
 // Floating point operators have a `.` suffix.
@@ -295,9 +326,9 @@ let polishAdder = (a, b) => (+) (a, b);
 // Operators are just functions that can be reassigned.
 let (+) = (a, b) => a * b;
 
-// Custom operators can be any of the reserved characters.
-let ($) = (a, b) => a + b + 3;
-print_int(3 $ 4);
+// Custom operators can use any of the reserved characters.
+let ($) = (a, b) => a - b + 3;
+4 $ 3   // - : int = 4
 
 
 /*** > Tuple ***/
@@ -452,12 +483,12 @@ let toyotaSupra: car({. accelerate: unit => unit, brake: unit => unit, checkSpee
     pub checkSpeed = speed^;
 };
 
-/* The above example is illustrative. A warning underlines the speed val because
-    objects implicitly contain `this`. `this` represents the object itself and
-    not simply its behaviors or values. The warning will go away either through
-    the use of a private method requiring `this`, such as `this#privateMethod`, or
-    through assigning `this` as a casual variable. The latter can be achieved
-    with the `as` keyword.
+/* The above example is illustrative of the earlier point about `as` vis-a-vis objects.
+    A warning underlines the speed val because objects implicitly contain `this`.
+    `this` represents the object itself and not simply its behaviors or values. The
+    warning will go away either through the use of a private method requiring `this`,
+    such as `this#privateMethod`, or through assigning `this` as a casual variable.
+    The latter can be achieved with the `as` keyword.
     
     Append `as _this;` after toyotaSupra's opening bracket to clear the warning. */
 
@@ -1235,4 +1266,5 @@ let calculate = (numbers, scaleFactor) => jsCalculate(Array.of_list(numbers), sc
 
 Js.log("calculating")
 Js.log(calculate([1, 2, 3], 10));
+
 ```
