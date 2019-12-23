@@ -166,7 +166,8 @@ let specialCharacters = {|This is fine. !@#'"`$%^&*()|}
 let world = {js|🌍|js};
 
 // The `j` marker enables variable interpolation.
-let helloWorld = {j|hello, $world|j};
+// The parenthesis are optional but required if characters directly follow the variable
+let helloWorld = {j|hello, $(world)|j};
 
 // The `$` is reserved to prefix variables and can be escaped with `\`.
 let accountBalance = {j|You have \$500.00|j};
@@ -1193,7 +1194,7 @@ if (aThing == State2) {
     to developers. This section is not intended to be exhaustive. For greater information,
     see the Bucklescript docs at https://bucklescript.github.io/. */
 
-// Most abilities are attached to the `Js` record.
+// Most abilities are attached to the `Js` module.
 Js.log("This will log to the console.");
 Js.logMany([|"Log", "an", "array"|]);
 
@@ -1233,3 +1234,55 @@ let calculate = (numbers, scaleFactor) => jsCalculate(Array.of_list(numbers), sc
 
 Js.log("calculating")
 Js.log(calculate([1, 2, 3], 10));
+
+/* Along with the Js module, there are Bucklescript-specific tools that are necessary for writing JavScript bindings. Bindings are code that take external JavaScript and represent it in ReasonML's symbolic system. When transpiled to JavaScript, Bucklescript will create functions that check the consistency of the JavaScript according to the provided bindings. This means that, unlike in TypeScript, transpiled ReasonML code is type safe. It will perform run-time checks, injecting stability and debuggability into the application in case of unexpected external input, as from the response from an API.
+
+
+*/
+
+/*----------------------------------------------
+ * ReasonReact
+ *----------------------------------------------
+ */
+
+
+/* ReasonML was created by the same person, Jordan Walke, that created React. It could be seen as a language created specifically to enable faster, more reliable production of React apps. React and ReasonML have walked hand-in-hand because of this, meaning that much of the discussion surrounding the language has focused on React. ReasonReact's home page is even hosted on the same domain as ReasonML. As such, it is sensible to include an overview of the React library's bindings. */
+
+// ReasonReact offers decorators that abstract away Bucklescript implementations.
+
+[@react.component]
+[@react.component]
+let make = (~food) => {
+    let (amount, eat) = React.useState( () => 0 );
+    let eatMore = () => { eat( (_) => { amount + 1 } ) };
+    <div>
+        <p> { React.string( {j| $food monster has eaten $amount $(food)s |j} ) }</p>
+        <button onClick={ (_ev) => eatMore() }>{ React.string( {j| Eat $food |j} ) }</button>
+    </div>
+};
+
+/* The above abstracts away much of React's boilerplate. All that must be written are the decorator and the render function, which is called `make`. The example is a variation on the standard React Hooks example available on React's website, and the ReasonML version available on the ReasonReact site.
+
+The named arguments constitute the component's props. The next line is the state Hook. `useState` returns a 2-tuple, with the first value being the value to store and second being the function that can change that value. With destructuring, the names `amount` and `eat` are bound to the values. `useState` takes a single argument, a function that initializes the state value. In the above case, an inital value of `int : 0` is bound to `amount`.
+
+The returned function, `eat`, is simply a wrapper that returns the provided function and ensures that it follows the correct signature. In this example, it ensures that the function passed into `eat` accepts the type of of `amount`, returns a function that accepts that type, changes the state, and returns unit, because it is a side-effect function.
+
+`eatMore` is a wrapper function that calls `eat`
+
+The final piece of JSX is the implicitly returned value.
+*/
+
+[@bs.obj]
+external makeProps: (~name: 'name, ~key: string=?, unit) => {. "name": 'name} = "";
+
+let make = (Props) => {
+  let name = Props##name;
+  let (count, setCount) = React.useState(() => 0);
+
+  <div>
+    <p> {React.string(name ++ " clicked " ++ string_of_int(count) ++ " times")} </p>
+    <button onClick={_evt => setCount(count => count + 1)}>
+      {React.string("Click me")}
+    </button>
+  </div>
+};
