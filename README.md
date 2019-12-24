@@ -1285,7 +1285,6 @@ Js.log(calculate([1, 2, 3], 10));
 // ReasonReact offers decorators that abstract away Bucklescript implementations.
 
 [@react.component]
-[@react.component]
 let make = (~food) => {
     let (amount, eat) = React.useState( () => 0 );
     let eatMore = () => { eat( (_) => { amount + 1 } ) };
@@ -1295,15 +1294,27 @@ let make = (~food) => {
     </div>
 };
 
-/* The above abstracts away much of React's boilerplate. All that must be written are the decorator and the render function, which is called `make`. The example is a variation on the standard React Hooks example available on React's website, and the ReasonML version available on the ReasonReact site.
+/* The above abstracts away much of React's boilerplate. All that must be written are the
+    decorator and the render function, which is called `make`. The example is a variation
+    on the standard React Hooks example available on React's website, and the ReasonML version
+    available on the ReasonReact site.
 
-The named arguments constitute the component's props. The next line is the state Hook. `useState` returns a 2-tuple, with the first value being the value to store and second being the function that can change that value. With destructuring, the names `amount` and `eat` are bound to the values. `useState` takes a single argument, a function that initializes the state value. In the above case, an inital value of `int : 0` is bound to `amount`.
+    The labeled arguments constitute the component's props. The next line is the state Hook.
+    `useState` returns a 2-tuple, with the first element being the value to store and the second
+    being the function that can change that value. With destructuring, the names `amount`
+    and `eat` are bound to the values. `useState` takes a single argument, a function that
+    initializes the state value. In the above case, an inital value of `int : 0` is bound to
+    `amount`.
 
-The returned function, `eat`, is simply a wrapper that returns the provided function and ensures that it follows the correct signature. In this example, it ensures that the function passed into `eat` accepts the type of of `amount`, returns a function that accepts that type, changes the state, and returns unit, because it is a side-effect function.
+    The returned function, `eat`, is a wrapper that adds a signature to, and then returns, a 
+    provided function. In this example, the anonymous function passed into eat is signed as 
+    accepting an integer and returning a unit. Any function passed into `eat` must follow the 
+    same signature.
+    
+    `eatMore` is a wrapper function that calls `eat`. `eat` cannot be directly called because 
+    the function must accept a React Event. `eatMore` accepts the event and ignores it.
 
-`eatMore` is a wrapper function that calls `eat`
-
-The final piece of JSX is the implicitly returned value.
+    The final piece of JSX is the implicitly returned value.
 */
 
 [@bs.obj]
