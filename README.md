@@ -1280,7 +1280,12 @@ Js.log(calculate([1, 2, 3], 10));
  */
 
 
-/* ReasonML was created by the same person, Jordan Walke, that created React. It could be seen as a language created specifically to enable faster, more reliable production of React apps. React and ReasonML have walked hand-in-hand because of this, meaning that much of the discussion surrounding the language has focused on React. ReasonReact's home page is even hosted on the same domain as ReasonML. As such, it is sensible to include an overview of the React library's bindings. */
+/* ReasonML was created by the same person, Jordan Walke, that created React. It could be seen
+    as a language created specifically to enable faster, more reliable production of React apps.
+    React and ReasonML have walked hand-in-hand because of this, meaning that much of the
+    discussion surrounding the language has focused on React. ReasonReact's home page is even
+    hosted on the same domain as ReasonML. As such, it is sensible to include an overview of the
+    React library's bindings. */
 
 // ReasonReact offers decorators that abstract away Bucklescript implementations.
 
@@ -1307,14 +1312,19 @@ let make = (~food) => {
     `amount`.
 
     The returned function, `eat`, is a wrapper that adds a signature to, and then returns, a 
-    provided function. In this example, the anonymous function passed into eat is signed as 
+    provided function. In this example, the anonymous function passed into `eat` is signed as 
     accepting an integer and returning a unit. Any function passed into `eat` must follow the 
     same signature.
     
     `eatMore` is a wrapper function that calls `eat`. `eat` cannot be directly called because 
-    the function must accept a React Event. `eatMore` accepts the event and ignores it.
+    the function must accept a React Event, while functions that can change the state will only
+    accept the same type that they return, in this case an integer. `eatMore` is a single-use
+    function with no special signature, as such it accepts the event and ignores it.
 
-    The final piece of JSX is the implicitly returned value.
+    The final piece of JSX is the implicitly returned value. All strings must be placed in the
+    typed wrapper React.string(). The `onClick` event automatically captures the React event and
+    passes it into the provided function. In this example, an underscore is used to create a
+    casual variable. Since the event is not being used, a warning would otherwise be displayed.
 */
 
 [@bs.obj]
