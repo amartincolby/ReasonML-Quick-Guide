@@ -1265,6 +1265,7 @@ let make = (~food) => {
     </div>
 };
 
+
 /* The above abstracts away much of React's boilerplate. All that must be written are the
     decorator and the render function, which is called `make`. The example is a variation
     on the standard React Hooks example available on React's website, and the ReasonML version
@@ -1285,25 +1286,26 @@ let make = (~food) => {
     `eatMore` is a wrapper function that calls `eat`. `eat` cannot be directly called because 
     the function must accept a React Event, while functions that can change the state will only
     accept the same type that they return, in this case an integer. `eatMore` is a single-use
-    function with no special signature, as such it accepts the event and ignores it.
+    function with no special signature. The function passed into `eat` must accept an integer,
+    but there is no integer to provide. An anonymous variable is provided since it fulfills any
+    type requirement.
 
     The final piece of JSX is the implicitly returned value. All strings must be placed in the
     typed wrapper React.string(). The `onClick` event automatically captures the React event and
     passes it into the provided function. In this example, an underscore is used to create a
     casual variable. Since the event is not being used, a warning would otherwise be displayed.
+
+    The above steps and nested functions may seem overly complex, but it is the nature of
+    functional programming that steps are not broken down by passing arguments or mutating values.
+    Instead, steps are taken with the progressive application of signed and typed functions.
+
+    ReasonReact is built around Hooks and supports all of them. The older API is deprecated.
 */
 
-[@bs.obj]
-external makeProps: (~name: 'name, ~key: string=?, unit) => {. "name": 'name} = "";
+/*----------------------------------------------
+ * Belt
+ *----------------------------------------------
+ */
 
-let make = (Props) => {
-  let name = Props##name;
-  let (count, setCount) = React.useState(() => 0);
-
-  <div>
-    <p> {React.string(name ++ " clicked " ++ string_of_int(count) ++ " times")} </p>
-    <button onClick={_evt => setCount(count => count + 1)}>
-      {React.string("Click me")}
-    </button>
-  </div>
-};
+/* Belt is an implementation of OCaml's standard library that provides additional tools
+    specifically to facilitate transpilation to JavaScript. */
