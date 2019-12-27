@@ -29,7 +29,7 @@ Reason is a syntax layer over OCaml. Under the covers, Reason *is* OCaml. It is 
 
 Reason's *raison d'être* is to give JavaScript developers a language that is familiar, but cleaner, does not require explicit type declarations, and provides algebraically guaranteed type safety. Further, as a syntax layer, code written in Reason can be readily compiled to OCaml and run as a native executable, paving the way for easy Web Assembly and cross-platform development.
 
-The below text is valid ReasonML code.
+The below text is valid ReasonML code. It is a copy of the code in the src directory. 
 
 ``` reason
 /* Comment blocks start with slash-star,

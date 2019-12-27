@@ -270,8 +270,8 @@ let myString2 = "A world without string is chaos.";
 8 / 2;          // - : int = 4
 
 // Integer division will round results
-8 / 3           // - : int = 2
-8 / 5           // - : int = 1
+8 / 3;           // - : int = 2
+8 / 5;           // - : int = 1
 
 
 /*** > Float ***/
@@ -1215,36 +1215,35 @@ getAccountID
 
 // Async/Await support is under development.
 
-/* Beyond the direct integration of certain features, the Bucklescript transpiler allows
-    for direct injection of JavaScript into Reason. */
 
-let jsCalculate: (array(int), int) => int = [%bs.raw
+/*** Bucklescript ***/
+
+/* As earlier stated, Bucklescript is the transpiler for turning an OCaml syntax tree into JavaScript. When ReasonML compiles, it is turned into an OCaml syntax tree and can then be pulled into all existing OCaml toolchains. While ReasonML contains many of its own JavaScript abilities, accessing the broader JavaScript world requires the use of Bucklescript-specific tools. This comes into play most commonly when writing bindings between ReasonML and existing JavaScript that cannot be easily converted to ReasonML.
+
+Bindings are code that take external JavaScript and represent it in ReasonML's symbolic system. When transpiled to JavaScript, Bucklescript will generate functions that check the consistency of the JavaScript according to the provided bindings. This means that, unlike in TypeScript, transpiled ReasonML code is type safe. It will perform run-time checks, injecting stability and debuggability into the application in case of unexpected external input, as from the response from an API. */
+
+
+// bs.raw allow the direct injection of raw JavaScript.
+
+let jsReduce: (array(int), int) => int = [%bs.raw
     {|
         function (numbers, scaleFactor) {
             var result = 0;
-            numbers.forEach(number => {
+            numbers.forEach( (number) => {
                 result += number;
             });
-            return result * scaleFactor;
+            return result;
         }
     |}
 ];
 
-let calculate = (numbers, scaleFactor) => jsCalculate(Array.of_list(numbers), scaleFactor);
+let calculate = (numbers) => jsReduce(Array.of_list(numbers));
 
-Js.log("calculating")
-Js.log(calculate([1, 2, 3], 10));
-
-/* Along with the Js module, there are Bucklescript-specific tools that are necessary for writing JavScript bindings. Bindings are code that take external JavaScript and represent it in ReasonML's symbolic system. When transpiled to JavaScript, Bucklescript will create functions that check the consistency of the JavaScript according to the provided bindings. This means that, unlike in TypeScript, transpiled ReasonML code is type safe. It will perform run-time checks, injecting stability and debuggability into the application in case of unexpected external input, as from the response from an API.
-
-
-*/
 
 /*----------------------------------------------
  * ReasonReact
  *----------------------------------------------
  */
-
 
 /* ReasonML was created by the same person, Jordan Walke, that created React. It could be seen
     as a language created specifically to enable faster, more reliable production of React apps.
@@ -1252,8 +1251,6 @@ Js.log(calculate([1, 2, 3], 10));
     discussion surrounding the language has focused on React. ReasonReact's home page is even
     hosted on the same domain as ReasonML. As such, it is sensible to include an overview of the
     React library's bindings. */
-
-// ReasonReact offers decorators that abstract away Bucklescript implementations.
 
 [@react.component]
 let make = (~food) => {
@@ -1264,7 +1261,6 @@ let make = (~food) => {
         <button onClick={ (_ev) => eatMore() }>{ React.string( {j| Eat $food |j} ) }</button>
     </div>
 };
-
 
 /* The above abstracts away much of React's boilerplate. All that must be written are the
     decorator and the render function, which is called `make`. The example is a variation
