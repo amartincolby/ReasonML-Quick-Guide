@@ -17,8 +17,8 @@ I also want to bring note to the small but dedicated group over at the [ReasonML
 # Further Information
 - [Reason Package Index, aka Redex](https://redex.github.io/)
 - [Official Reason Docs](https://reasonml.github.io/docs/en/what-and-why)
+- [Bucklescript docs](https://bucklescript.github.io/)
 - [ReasonReact Docs](https://reasonml.github.io/reason-react)
-- [Official BuckleScript Docs](https://bucklescript.github.io/docs/en/what-why)
 - [Exploring ReasonML](http://reasonmlhub.com/exploring-reasonml/toc.html) *Perhaps the best docs currently available*
 - [Try Reason](https://reasonml.github.io/en/try)
 - [Real World OCaml](http://dev.realworldocaml.org/toc.html)
@@ -50,7 +50,7 @@ The below text is valid ReasonML code. It is a copy of the code in the src direc
 type kwyjibo;
 
 /* The below type is a concrete type with a defined structure. These will appear frequently
-    since any record must have an associated type. */
+    in this guide since any record must have an associated type. */
 
 type thing = {
     value1: string,
@@ -304,8 +304,8 @@ let myString2 = "A world without string is chaos.";
 8 / 2;          // - : int = 4
 
 // Integer division will round results
-8 / 3           // - : int = 2
-8 / 5           // - : int = 1
+8 / 3;           // - : int = 2
+8 / 5;           // - : int = 1
 
 
 /*** > Float ***/
@@ -1249,36 +1249,82 @@ getAccountID
 
 // Async/Await support is under development.
 
-/* Beyond the direct integration of certain features, the Bucklescript transpiler allows
-    for direct injection of JavaScript into Reason. */
 
-let jsCalculate: (array(int), int) => int = [%bs.raw
+/*----------------------------------------------
+ * Bucklescript
+ *----------------------------------------------
+ */
+
+/* As earlier stated, Bucklescript is the transpiler for turning an OCaml syntax tree into
+    JavaScript. When ReasonML compiles, it is turned into an OCaml syntax tree and can then
+    be pulled into all existing OCaml toolchains. While ReasonML contains many of its own
+    JavaScript abilities, accessing the broader JavaScript world requires the use of
+    Bucklescript-specific tools. This comes into play most commonly when writing bindings
+    between ReasonML and existing JavaScript that cannot be easily converted to ReasonML.
+
+    Bindings are code that take external JavaScript and represent it in ReasonML's symbolic
+    system. When transpiled to JavaScript, Bucklescript will generate functions that check
+    the consistency of the JavaScript according to the provided bindings. This means that,
+    unlike in TypeScript, transpiled ReasonML code is type safe. It will perform run-time
+    checks, injecting stability and debuggability into the application in case of unexpected
+    external input, as from the response from an API. */
+
+// bs.raw allow the direct injection of raw JavaScript.
+
+let jsReduce: (array(int), int) => int = [%bs.raw
     {|
         function (numbers, scaleFactor) {
             var result = 0;
-            numbers.forEach(number => {
+            numbers.forEach( (number) => {
                 result += number;
             });
-            return result * scaleFactor;
+            return result;
         }
     |}
 ];
 
-let calculate = (numbers, scaleFactor) => jsCalculate(Array.of_list(numbers), scaleFactor);
+let calculate = (numbers) => jsReduce(Array.of_list(numbers));
 
-Js.log("calculating")
-Js.log(calculate([1, 2, 3], 10));
+/*----------------------------------------------
+ * Belt
+ *----------------------------------------------
+ */
 
-/* Along with the Js module, there are Bucklescript-specific tools that are necessary for writing JavScript bindings. Bindings are code that take external JavaScript and represent it in ReasonML's symbolic system. When transpiled to JavaScript, Bucklescript will create functions that check the consistency of the JavaScript according to the provided bindings. This means that, unlike in TypeScript, transpiled ReasonML code is type safe. It will perform run-time checks, injecting stability and debuggability into the application in case of unexpected external input, as from the response from an API.
+/* Belt is an implementation/extension of OCaml's standard library that provides additional tools
+    specifically to facilitate transpilation to JavaScript. From the perpsective of JavaScript
+    developers, the best analogy is Lodash. Unlike Lodash, Belt comes along as a native part of
+    Bucklescript. As of January 2020, Belt is officially in beta, with breaking changes
+    periodically occuring. That said, it is mostly stable and widely used by developers in the
+    community.
+    
+    There are two parts to the Belt library: the primary module and the "flattened" modules. The
+    primary module has sub-modules, each of which contain functions for manipulating data. The
+    flattened modules are prefixed with Belt_, such as Belt_Map, and are the legacy tools. The
+    primary module is intended to ultimately provide all of the same functionality of the flattened
+    modules, but it is a work in progress. Currently, the flattened modules provide some
+    additional functionality, such as tools for manipulating AVL trees.
+    
+    When given the choice, do not use the flattened modules unless a particular piece of functionality
+    is utterly necessary. The flattened modules will disappear at some point in a future version of
+    Bucklescript. */
 
+let testArray = [|"1", "2", "3"|];
 
-*/
+Belt.Array.forEach(testArray, (element) => {
+    Js.log(element);
+});
+
+// The flattened module does the same thing. It is simply deprecated syntax.
+
+Belt_Array.forEach(testArray, (element) => {
+    Js.log(element);
+});
+
 
 /*----------------------------------------------
  * ReasonReact
  *----------------------------------------------
  */
-
 
 /* ReasonML was created by the same person, Jordan Walke, that created React. It could be seen
     as a language created specifically to enable faster, more reliable production of React apps.
@@ -1287,12 +1333,10 @@ Js.log(calculate([1, 2, 3], 10));
     hosted on the same domain as ReasonML. As such, it is sensible to include an overview of the
     React library's bindings. */
 
-// ReasonReact offers decorators that abstract away Bucklescript implementations.
-
 [@react.component]
 let make = (~food) => {
     let (amount, eat) = React.useState( () => 0 );
-    let eatMore = () => { eat( (_e) => { amount + 1 } ) };
+    let eatMore = () => { eat( (_) => { amount + 1 } ) };
     <div>
         <p> { React.string( {j| $food monster has eaten $amount $(food)s |j} ) }</p>
         <button onClick={ (_ev) => eatMore() }>{ React.string( {j| Eat $food |j} ) }</button>
@@ -1334,13 +1378,4 @@ let make = (~food) => {
 
     ReasonReact is built around Hooks and supports all of them. The older API is deprecated.
 */
-
-/*----------------------------------------------
- * Belt
- *----------------------------------------------
- */
-
-/* Belt is an implementation of OCaml's standard library that provides additional tools
-    specifically to facilitate transpilation to JavaScript. */
-
 ```

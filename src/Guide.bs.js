@@ -6,6 +6,7 @@ var Curry = require("bs-platform/lib/js/curry.js");
 var React = require("react");
 var Random = require("bs-platform/lib/js/random.js");
 var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
+var Belt_Array = require("bs-platform/lib/js/belt_Array.js");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var Caml_int32 = require("bs-platform/lib/js/caml_int32.js");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
@@ -664,6 +665,22 @@ function calculate(numbers) {
   return Curry._1(jsReduce, $$Array.of_list(numbers));
 }
 
+var testArray = /* array */[
+  "1",
+  "2",
+  "3"
+];
+
+Belt_Array.forEach(testArray, (function (element) {
+        console.log(element);
+        return /* () */0;
+      }));
+
+Belt_Array.forEach(testArray, (function (element) {
+        console.log(element);
+        return /* () */0;
+      }));
+
 function Guide(Props) {
   var food = Props.food;
   var match = React.useState((function () {
@@ -938,5 +955,6 @@ exports.aThing = aThing;
 exports.getAccountID = getAccountID;
 exports.jsReduce = jsReduce;
 exports.calculate = calculate;
+exports.testArray = testArray;
 exports.make = make;
 /*  Not a pure module */

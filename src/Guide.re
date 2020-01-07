@@ -16,7 +16,7 @@
 type kwyjibo;
 
 /* The below type is a concrete type with a defined structure. These will appear frequently
-    since any record must have an associated type. */
+    in this guide since any record must have an associated type. */
 
 type thing = {
     value1: string,
@@ -1216,12 +1216,24 @@ getAccountID
 // Async/Await support is under development.
 
 
-/*** Bucklescript ***/
+/*----------------------------------------------
+ * Bucklescript
+ *----------------------------------------------
+ */
 
-/* As earlier stated, Bucklescript is the transpiler for turning an OCaml syntax tree into JavaScript. When ReasonML compiles, it is turned into an OCaml syntax tree and can then be pulled into all existing OCaml toolchains. While ReasonML contains many of its own JavaScript abilities, accessing the broader JavaScript world requires the use of Bucklescript-specific tools. This comes into play most commonly when writing bindings between ReasonML and existing JavaScript that cannot be easily converted to ReasonML.
+/* As earlier stated, Bucklescript is the transpiler for turning an OCaml syntax tree into
+    JavaScript. When ReasonML compiles, it is turned into an OCaml syntax tree and can then
+    be pulled into all existing OCaml toolchains. While ReasonML contains many of its own
+    JavaScript abilities, accessing the broader JavaScript world requires the use of
+    Bucklescript-specific tools. This comes into play most commonly when writing bindings
+    between ReasonML and existing JavaScript that cannot be easily converted to ReasonML.
 
-Bindings are code that take external JavaScript and represent it in ReasonML's symbolic system. When transpiled to JavaScript, Bucklescript will generate functions that check the consistency of the JavaScript according to the provided bindings. This means that, unlike in TypeScript, transpiled ReasonML code is type safe. It will perform run-time checks, injecting stability and debuggability into the application in case of unexpected external input, as from the response from an API. */
-
+    Bindings are code that take external JavaScript and represent it in ReasonML's symbolic
+    system. When transpiled to JavaScript, Bucklescript will generate functions that check
+    the consistency of the JavaScript according to the provided bindings. This means that,
+    unlike in TypeScript, transpiled ReasonML code is type safe. It will perform run-time
+    checks, injecting stability and debuggability into the application in case of unexpected
+    external input, as from the response from an API. */
 
 // bs.raw allow the direct injection of raw JavaScript.
 
@@ -1238,6 +1250,41 @@ let jsReduce: (array(int), int) => int = [%bs.raw
 ];
 
 let calculate = (numbers) => jsReduce(Array.of_list(numbers));
+
+/*----------------------------------------------
+ * Belt
+ *----------------------------------------------
+ */
+
+/* Belt is an implementation/extension of OCaml's standard library that provides additional tools
+    specifically to facilitate transpilation to JavaScript. From the perpsective of JavaScript
+    developers, the best analogy is Lodash. Unlike Lodash, Belt comes along as a native part of
+    Bucklescript. As of January 2020, Belt is officially in beta, with breaking changes
+    periodically occuring. That said, it is mostly stable and widely used by developers in the
+    community.
+    
+    There are two parts to the Belt library: the primary module and the "flattened" modules. The
+    primary module has sub-modules, each of which contain functions for manipulating data. The
+    flattened modules are prefixed with Belt_, such as Belt_Map, and are the legacy tools. The
+    primary module is intended to ultimately provide all of the same functionality of the flattened
+    modules, but it is a work in progress. Currently, the flattened modules provide some
+    additional functionality, such as tools for manipulating AVL trees.
+    
+    When given the choice, do not use the flattened modules unless a particular piece of functionality
+    is utterly necessary. The flattened modules will disappear at some point in a future version of
+    Bucklescript. */
+
+let testArray = [|"1", "2", "3"|];
+
+Belt.Array.forEach(testArray, (element) => {
+    Js.log(element);
+});
+
+// The flattened module does the same thing. It is simply deprecated syntax.
+
+Belt_Array.forEach(testArray, (element) => {
+    Js.log(element);
+});
 
 
 /*----------------------------------------------
@@ -1297,11 +1344,3 @@ let make = (~food) => {
 
     ReasonReact is built around Hooks and supports all of them. The older API is deprecated.
 */
-
-/*----------------------------------------------
- * Belt
- *----------------------------------------------
- */
-
-/* Belt is an implementation of OCaml's standard library that provides additional tools
-    specifically to facilitate transpilation to JavaScript. */

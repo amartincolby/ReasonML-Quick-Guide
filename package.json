@@ -13,7 +13,7 @@
     "ReasonReact",
     "reason-react"
   ],
-  "author": "",
+  "author": "Aaron Martin-Colby",
   "license": "MIT",
   "dependencies": {
     "react": "16.8.1",
