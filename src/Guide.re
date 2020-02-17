@@ -6,40 +6,46 @@
 /*** A note on types ***/
 
 /* ReasonML makes little distinction between primitive types and what could be called
-    user-defined types or structs. They are simply values represented by symbols. */
+    user-defined types or structs. They are simply "things" represented by symbols.
 
-/* The below type is an abstract type, meaning that the symbol has no structure attached
+    The below type is an abstract type, meaning that the symbol has no structure attached
     to it. Any program using this type does not need to know its structure just so long
-    as references to the type are consistent. Basically, programs can use symbols without
+    as usage of the type is consistent. Basically, programs can use symbols without
     knowing what they mean. */
 
 type kwyjibo;
 
 /* The below type is a concrete type with a defined structure. These will appear frequently
-    in this guide since any record must have an associated type. */
+    in this guide since any record must have an associated concrete type. */
 
 type thing = {
-    value1: string,
-    value2: int,
+    value1 : string,
+    value2 : int,
 };
+
 
 /*----------------------------------------------
  * Variables, functions, and bindings
  *----------------------------------------------
  */
  
-/*
-    - Variables and functions both use the `let` keyword.
-    - Variable names must begin with a lowercase letter or underscore.
-    - `let` declarations are bindings, not assignments, and are thus immutable.
-    - Types are static and inferred via Hindley-Milner classification.
-*/
+/* In ReasonML, the word "variable" is used as convention but is inaccurate. Variables do
+    not vary, i.e. they are immutable. As with many functional languages, variables are more
+    accurately referred to as bindings, since what is happening is that a value is being
+    irrevocably bound to a symbol, not merely assigned.
+
+    Symbols and values, whether they be functions, primitives, or more complex structures,
+    are usually bound with the `let` keyword. Names must begin with a lowercase letter or
+    underscore. 
+
+    All values must have a static type, but these types often do not need to be declared in use.
+    In most cases, they can be inferred by the compiler via Hindley-Milner classification. */
 
 // The compiler will infer that x is an int.
 let x = 5;
 
 // Functions will likewise infer argument and return types.
-let add = (a, b) => a + b;
+let addInts = (a, b) => a + b;
 
 // Types can be functions
 type intFunction = (int, int) => int;
@@ -58,9 +64,9 @@ let myBlock = {
 
 /* The list of reserved words is broadly similar to OCaml, the list for which is
     available here http://caml.inria.fr/pub/docs/manual-ocaml-312/manual044.html.
-    The Reason-specific list is under development. */
+    The Reason-specific list is under development.
 
-/* Prefixing a variable name with an underscore creates a casual variable.
+    Prefixing a variable name with an underscore creates a casual variable.
     These variables, if unused, will not trigger a compiler warning.
     Unused variable warnings only apply to block scopes and will not be
     raised on variables declared at the global or module level. 
@@ -70,21 +76,10 @@ let myBlock = {
     not been been bound with one of the primary binding verbs. */
 
 let blockScope = () => {
-    let variable = 42; // This triggers a warning.
+    let variable = 42;          // This triggers a warning.
     let _casualVariable = 2001; // This does not trigger a warning.
     "Return string"
 }
-
-/*** as ***/
-
-/* `as` is a somewhat messy word in Reason. Broadly, it defines a binding. Where a
-    `let` binding binds a right-hand value to a left-hand identifier, `as` binds left
-    to right. Further, `as` does not actually bind values. It binds patterns. */
-
-// Example here
-
-/* `as` is also used in object assignment in a somewhat similar fashion. See the below
-    section on objects to see an explanation. */
 
 /*** Destructuring ***/
 
@@ -132,6 +127,36 @@ myMutableNumber := 240;
 
 // To access the value in a `ref()`, use the `^` suffix.
 let copyOfMyMutableNumber = myMutableNumber^;
+
+
+/*** as ***/
+
+/* The second way to perform a symbol/value binding is with `as`. Where a `let`
+    binding binds a right-hand value to a left-hand symbol, `as` binds left to right.
+    This syntax exists because of the common practice of "piping" something from one
+    segment of code into the following segment. This stands in contrast to the
+    procedural practice of variable assignment and then, later, variable use.
+
+    Unlike `let`, which must be declared procedurally just like variable declarations
+    in most other common languages, the `as` binding can only be declared functionally,
+    since it must be passed through to a succeeding block.
+
+    An important difference between `let` binding and `as` is when patterns are evaluated.
+
+    This is an esoteric concept, so do not be dissuaded if it is at first strange and
+    incomprehensible. At its root, `as` is an excellent example of the pattern matching
+    at the root of modern functional languages. */
+    
+// Since `as` is a binding, it has paramount precedence.
+
+// https://stackoverflow.com/questions/49840954/keyword-as-in-sml-nj?noredirect=1&lq=1
+// https://stackoverflow.com/questions/26769403/as-keyword-in-ocaml
+// https://reasonml.chat/t/an-explanation-of-as/1912
+
+// See obby
+
+/* `as` is also used in object assignment in a somewhat similar fashion. See the below
+    section on objects to see an explanation. */
 
 
 /*----------------------------------------------
@@ -451,6 +476,8 @@ let toyotaSupra: car({. accelerate: unit => unit, brake: unit => unit, checkSpee
     pub checkSpeed = speed^;
 };
 
+// obby
+
 /* The above example is illustrative of the earlier point about `as` vis-a-vis objects.
     A warning underlines the speed val because objects implicitly contain `this`.
     `this` represents the object itself and not simply its behaviors or values. The
@@ -502,7 +529,13 @@ let newUser = Moderator(GitHub, Europe);
 /* At the root of Reason's safety is the concept of possible existence. This is
     not like `null` or `undefined` but an explicit state of nothing. Possible
     existence is handled with the `Option` type. Options are like a variant with
-    two states, Some() and None. */
+    two states, Some() and None.
+    
+    Those coming from other functional languages will possibly recognize Some()
+    as a monad. For the purposes of this section, a monad is a wrapper of known
+    structure that can contain other data. The benefits of monads are as a
+    high-level abstraction of computation and structure. They will be further
+    discussed in a later section.  */
 
 Random.self_init();
 let thingIsHere = Random.bool();
@@ -742,7 +775,7 @@ let logSomething = true;
 if (logSomething) {
     print_endline("Logged!");
     // `unit` is returned.
-}
+};
 
 /* 'if` does not exist independently. It is always paired with `else`,
     either implicitly or explicitly. */
@@ -766,7 +799,7 @@ let isItReallyTrue = if (false) {
 
 /*** > Loops ***/
 
-// Loops are similar to other languages except that Reason has no `break` or `continue`.
+/* Loops are similar to other languages except that Reason has no `break` or `continue`. This is consistent with the idea that any procedure must have a single entrance and a single exit, just as a mathematical algorithm would have. */
 
 /* For Loop */
 
@@ -802,14 +835,14 @@ while (testVariable^) {
     of errors and unintended behaviors and offers a profound competitive
     advantage in comparison to other languages and tools.
     
-Pattern matching uses decomposition of input to analyze the relationship
+    Pattern matching uses decomposition of input to analyze the relationship
     of tokens to find set patterns. This stands in contrast to a direct
     comparison of two values sitting in memory. That sounds fighteningly
     complex but it is actually rather straightforward. A complete discussion
     of pattern matching on a theoretical level is beyond the scope of this
     tour, but it is encouraged to read the Wikipedia page on the subject.
     
-In Reason, as with many functional languages, pattern matching is used
+    In Reason, as with many functional languages, pattern matching is used
     for all comparisons. Sometimes this acts like common value comparisons in
     other languages, like `x === y` in JavaScript. But unlike simple comparisons,
     a pattern has a finite number of states, meaning that the compiler can warn
@@ -1133,19 +1166,22 @@ module type Module8Interface = {
 };
 
 /* Interfaces are like a contract. They dictate what a module must provide to be of a type.
-    As such, module types must be explicitly declared om modules that fulfill all requirements
-    of that type. If Module8 did not provide `visibleThing` and `visibleFunction`, and error
-    would be produced. */
+    As such, module types must be explicitly declared on modules that fulfill all requirements
+    of that type. If Module8 did not provide `visibleThing` and `visibleFunction`, an error
+    would be produced.
+    
+    Interfaces are only inclusive, not exclusive in their requirements. Below, Module8 has another pair of value and function which does not cause a warning, it only causes an unused value warning since, while the interface does not exclude their inclusion, it does not expose them to the outside. */
 
 module Module8: Module8Interface = {
     let visibleThing = 2001;
-    // let invisibleThing = 42;
     let visibleFunction = (x,y) => {
         x * y
     };
-    // let invisibleFunction = (a,b) => {
-    //     a ++ b
-    // };
+    
+    let invisibleThing = 42;
+    let invisibleFunction = (a,b) => {
+        a ++ b
+    };
 };
 
 module Module9 = {
@@ -1233,13 +1269,15 @@ getAccountID
     the consistency of the JavaScript according to the provided bindings. This means that,
     unlike in TypeScript, transpiled ReasonML code is type safe. It will perform run-time
     checks, injecting stability and debuggability into the application in case of unexpected
-    external input, as from the response from an API. */
+    external input, as from the response from an API. 
+    
+    In the below example, the %bs.raw decorator allows direct injection of JavaScript. What
+    the JS accepts and what it returns must still be typed, but there are no guarantees that
+    the code will actually accept or return what is declared. */
 
-// bs.raw allow the direct injection of raw JavaScript.
-
-let jsReduce: (array(int), int) => int = [%bs.raw
+let jsReduce: (array(int)) => int = [%bs.raw
     {|
-        function (numbers, scaleFactor) {
+        function (numbers) {
             var result = 0;
             numbers.forEach( (number) => {
                 result += number;
@@ -1259,9 +1297,12 @@ let calculate = (numbers) => jsReduce(Array.of_list(numbers));
 /* Belt is an implementation/extension of OCaml's standard library that provides additional tools
     specifically to facilitate transpilation to JavaScript. From the perpsective of JavaScript
     developers, the best analogy is Lodash. Unlike Lodash, Belt comes along as a native part of
-    Bucklescript. As of January 2020, Belt is officially in beta, with breaking changes
+    Bucklescript. As of February 2020, Belt is officially in beta, with breaking changes
     periodically occuring. That said, it is mostly stable and widely used by developers in the
     community.
+
+    Belt possesses much of the same functionality as the Js module. It is recommended to use Belt
+    instead of Js since it prevents application logic from being tied to JavaScript.
     
     There are two parts to the Belt library: the primary module and the "flattened" modules. The
     primary module has sub-modules, each of which contain functions for manipulating data. The
@@ -1344,3 +1385,30 @@ let make = (~food) => {
 
     ReasonReact is built around Hooks and supports all of them. The older API is deprecated.
 */
+
+
+/*----------------------------------------------
+ * Monads
+ *----------------------------------------------
+ */
+
+/* ReasonML is a functional language, meaning that processes are based on the evaluations of
+    mathematical functions. This means that for the same inputs, the program will always return
+    the same output. This results in the problem of how a program is to have state or handle effects.
+    Common programs have a great many effects, such as logs, timers, I/O, etc. Functional
+    languages solve these problems with through the use of monads. 
+    
+    ReasonML, and OCaml before it, made practical concessions to the needs of developers by allowing,
+    and having language structures for, effects and state. It did not forget the lessons of monads,
+    though, and has a few on the language level. Most notable, and most striking to developers coming
+    from more procedural languages, is Option.
+    
+    Monads are simply a structure that follows certain rules. They are not peculiar to functional
+    languages. They simply rose in usage in that context because they were necessary for solving
+    certain problems. Their utility has become apparent, with other languages adopting common monads
+    like Option. Scala, Kotlin, C#, and Java all now have optional values as part of the language.
+    Indeed, monads are becoming common.
+    
+    The purpose of this section therefore is to bring focus to their genesis and hopefully explain
+    why knowledge of monads, and category theory more broadly, is an extremely fruitful course of
+    investigation. */

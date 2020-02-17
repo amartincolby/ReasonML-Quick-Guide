@@ -16,7 +16,7 @@ var Caml_exceptions = require("bs-platform/lib/js/caml_exceptions.js");
 
 var shared = /* array */["buildTruck"];
 
-function add(a, b) {
+function addInts(a, b) {
   return a + b | 0;
 }
 
@@ -652,7 +652,7 @@ getAccountID.then((function (result) {
       }));
 
 var jsReduce = (
-        function (numbers, scaleFactor) {
+        function (numbers) {
             var result = 0;
             numbers.forEach( (number) => {
                 result += number;
@@ -822,7 +822,7 @@ var aThing = /* State2 */1;
 var make = Guide;
 
 exports.x = x$2;
-exports.add = add;
+exports.addInts = addInts;
 exports.intAdder = intAdder;
 exports.myBlock = myBlock;
 exports.blockScope = blockScope;
