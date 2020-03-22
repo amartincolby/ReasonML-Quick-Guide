@@ -1,3 +1,5 @@
+![ReasonML Logo](reason_logo.png)
+
 # ReasonML Quick Guide
 
 ReasonML is a fantastic language. It is, in my eyes, a refinment of OCaml that eliminates many of the syntactic peculiarities of that language that are the result, I assume, of being French.
