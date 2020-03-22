@@ -22,12 +22,13 @@ I also want to bring note to the small but dedicated group over at the [ReasonML
 - [Exploring ReasonML](http://reasonmlhub.com/exploring-reasonml/toc.html) *Perhaps the best docs currently available*
 - [Try Reason](https://reasonml.github.io/en/try)
 - [Real World OCaml](http://dev.realworldocaml.org/toc.html)
+- [Revery](https://www.outrunlabs.com/revery/) *Akin to Electron, but produces true native binaries*
 
 # The Guide
 
-Reason is a syntax layer over OCaml. Under the covers, Reason *is* OCaml. It is broadly similar to OCaml but makes changes that bring its syntax better in alignment with C and thus JavaScript, which is a primary compile target. During compilation, Reason is translated into an OCaml abstract syntax tree. The BuckleScript compiler is then used to turn that AST into easy-to-read JavaScript.
+Reason is a syntax layer over OCaml. Under the covers, Reason *is* OCaml. It is broadly similar to OCaml but makes changes that bring its syntax better in alignment with C and thus JavaScript. During compilation, Reason is translated into an OCaml abstract syntax tree. The BuckleScript compiler is then used to turn that AST into optimized and easy-to-read JavaScript.
 
-Reason's *raison d'être* is to give JavaScript developers a language that is familiar, but cleaner, does not require explicit type declarations, and provides algebraically guaranteed type safety. Further, as a syntax layer, code written in Reason can be readily compiled to OCaml and run as a native executable, paving the way for easy Web Assembly and cross-platform development.
+Reason's *raison d'être* is to give JavaScript developers a language that is familiar but cleaner, does not require explicit type declarations, and provides algebraically guaranteed type safety. Further, as a syntax layer, code written in Reason can be readily compiled to OCaml and run as a native executable, paving the way for easy Web Assembly and cross-platform development.
 
 The below text is valid ReasonML code. It is a copy of the code in the src directory. 
 
@@ -98,7 +99,10 @@ let myBlock = {
 
 /* The list of reserved words is broadly similar to OCaml, the list for which is
     available here http://caml.inria.fr/pub/docs/manual-ocaml-312/manual044.html.
-    The Reason-specific list is under development.
+    The Reason-specific list is under development, with the current words available
+    in the ReasonML source code, on Github.
+
+    https://github.com/facebook/reason/blob/master/src/reason-parser/reason_declarative_lexer.mll#L85-L144
 
     Prefixing a variable name with an underscore creates a casual variable.
     These variables, if unused, will not trigger a compiler warning.
@@ -833,7 +837,10 @@ let isItReallyTrue = if (false) {
 
 /*** > Loops ***/
 
-/* Loops are similar to other languages except that Reason has no `break` or `continue`. This is consistent with the idea that any procedure must have a single entrance and a single exit, just as a mathematical algorithm would have. */
+/* Loops are similar to other languages except that Reason has no `break` or
+    `continue`. This is consistent with the idea that any procedure must have
+    a single entrance and a single exit, just as a mathematical algorithm
+    would have. */
 
 /* For Loop */
 
@@ -1204,7 +1211,10 @@ module type Module8Interface = {
     of that type. If Module8 did not provide `visibleThing` and `visibleFunction`, an error
     would be produced.
     
-    Interfaces are only inclusive, not exclusive in their requirements. Below, Module8 has another pair of value and function which does not cause a warning, it only causes an unused value warning since, while the interface does not exclude their inclusion, it does not expose them to the outside. */
+    Interfaces are only inclusive, not exclusive in their requirements. Below, Module8 has
+    another pair of value and function which does not cause a warning, it only causes an unused
+    value warning since, while the interface does not exclude their inclusion, it does not expose
+    them to the outside. */
 
 module Module8: Module8Interface = {
     let visibleThing = 2001;
@@ -1306,8 +1316,9 @@ getAccountID
     external input, as from the response from an API. 
     
     In the below example, the %bs.raw decorator allows direct injection of JavaScript. What
-    the JS accepts and what it returns must still be typed, but there are no guarantees that
-    the code will actually accept or return what is declared. */
+    the JavaScript accepts from ReasonML and what it returns to ReasonML must still be typed,
+    but there are no guarantees that the JavaScript will actually accept or return what is
+    declared. */
 
 let jsReduce: (array(int)) => int = [%bs.raw
     {|
@@ -1398,7 +1409,7 @@ let make = (~food) => {
 
     The returned function, `eat`, is a wrapper that adds a signature to, and then returns, a 
     provided function. In this example, the anonymous function passed into `eat` is signed as 
-    accepting an integer and returning a unit. Any function passed into `eat` must follow the 
+    accepting an integer and returning an integer. Any function passed into `eat` must follow the 
     same signature.
     
     `eatMore` is a wrapper function that calls `eat`. `eat` cannot be directly called because 
@@ -1437,11 +1448,12 @@ let make = (~food) => {
     though, and has a few on the language level. Most notable, and most striking to developers coming
     from more procedural languages, is Option.
     
-    Monads are simply a structure that follows certain rules. They are not peculiar to functional
-    languages. They simply rose in usage in that context because they were necessary for solving
+    A monad is simply a structure that follows certain rules. Monads are not peculiar to functional
+    languages. They simply arose in usage in that context because they were necessary for solving
     certain problems. Their utility has become apparent, with other languages adopting common monads
     like Option. Scala, Kotlin, C#, and Java all now have optional values as part of the language.
-    Indeed, monads are becoming common.
+    Indeed, monads are becoming common. JavaScript has perhaps the most widely used monad in
+    computer history in the form of the promise.
     
     The purpose of this section therefore is to bring focus to their genesis and hopefully explain
     why knowledge of monads, and category theory more broadly, is an extremely fruitful course of
