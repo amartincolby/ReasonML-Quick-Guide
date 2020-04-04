@@ -14,7 +14,7 @@ var Caml_oo_curry = require("bs-platform/lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("bs-platform/lib/js/camlinternalOO.js");
 var Caml_exceptions = require("bs-platform/lib/js/caml_exceptions.js");
 
-var shared = /* array */["buildTruck"];
+var shared = ["buildTruck"];
 
 function addInts(a, b) {
   return a + b | 0;
@@ -129,12 +129,12 @@ var tastyChex = {
   amount: 250
 };
 
-var $$class = CamlinternalOO.create_table(/* array */["addNumber"]);
+var $$class = CamlinternalOO.create_table(["addNumber"]);
 
-var ids = CamlinternalOO.new_methods_variables($$class, /* array */[
+var ids = CamlinternalOO.new_methods_variables($$class, [
       "increment",
       "addNumber"
-    ], /* array */["aNumber"]);
+    ], ["aNumber"]);
 
 var increment = ids[0];
 
@@ -142,7 +142,7 @@ var addNumber = ids[1];
 
 var aNumber = ids[2];
 
-CamlinternalOO.set_methods($$class, /* array */[
+CamlinternalOO.set_methods($$class, [
       increment,
       (function (self$1, num) {
           self$1[aNumber].contents = Caml_int32.imul(self$1[aNumber].contents, num);
@@ -169,7 +169,7 @@ var newObject = obj_init(0);
 
 var $$class$1 = CamlinternalOO.create_table(shared);
 
-var ids$1 = CamlinternalOO.new_methods_variables($$class$1, shared, /* array */["drive"]);
+var ids$1 = CamlinternalOO.new_methods_variables($$class$1, shared, ["drive"]);
 
 var buildTruck = ids$1[0];
 
@@ -191,17 +191,17 @@ var newTruck = obj_init$1(0);
 
 var toyotaTundra = Caml_oo_curry.js3(715262353, 1, newTruck, "Toyota", "Tundra");
 
-var $$class$2 = CamlinternalOO.create_table(/* array */[
+var $$class$2 = CamlinternalOO.create_table([
       "checkSpeed",
       "accelerate",
       "brake"
     ]);
 
-var ids$2 = CamlinternalOO.new_methods_variables($$class$2, /* array */[
+var ids$2 = CamlinternalOO.new_methods_variables($$class$2, [
       "checkSpeed",
       "brake",
       "accelerate"
-    ], /* array */["speed"]);
+    ], ["speed"]);
 
 var checkSpeed = ids$2[0];
 
@@ -211,7 +211,7 @@ var accelerate = ids$2[2];
 
 var speed = ids$2[3];
 
-CamlinternalOO.set_methods($$class$2, /* array */[
+CamlinternalOO.set_methods($$class$2, [
       accelerate,
       (function (self$3, param) {
           if (self$3[speed].contents < 155) {
@@ -275,7 +275,7 @@ var newUserIds = /* :: */[
   newUserIds_001
 ];
 
-var languages = /* array */[
+var languages = [
   "Reason",
   "JavaScript",
   "OCaml"
@@ -651,21 +651,19 @@ getAccountID.then((function (result) {
         return Promise.resolve(-1);
       }));
 
-var jsReduce = (
-        function (numbers) {
+var jsReduce = (function (numbers) {
             var result = 0;
             numbers.forEach( (number) => {
                 result += number;
             });
             return result;
-        }
-    );
+        });
 
 function calculate(numbers) {
-  return Curry._1(jsReduce, $$Array.of_list(numbers));
+  return jsReduce($$Array.of_list(numbers));
 }
 
-var testArray = /* array */[
+var testArray = [
   "1",
   "2",
   "3"

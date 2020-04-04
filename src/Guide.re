@@ -439,6 +439,10 @@ type truck = {
     buildTruck: (~make:string, ~model:string) => string
 };
 
+/* If using an IDE, the below object will contain a warning underlining `val` referencing
+    the unused variable `this`. For the time being, ignore this warning. It will be
+    discussed shortly. */
+
 let newTruck: truck = {
     val drive = 4;
     pub buildTruck = (~make, ~model) => {j|You built a new $make $model with $drive-wheel drive.|j};
@@ -468,7 +472,7 @@ type car('a) = {
     convention, as the ' simply identifies a type label and the succeeding string
     can be anything. 'steve is equally valid to 'a. */
 
-let toyotaSupra: car({. accelerate: unit => unit, brake: unit => unit, checkSpeed: int}) = {
+let toyotaSupra:  car({. accelerate: unit => unit, brake: unit => unit, checkSpeed: int}) = {
     val speed = ref(0);
     pub accelerate = () => {
         if (speed^ < 155) {speed := speed^ + 1};
@@ -479,8 +483,6 @@ let toyotaSupra: car({. accelerate: unit => unit, brake: unit => unit, checkSpee
     pub checkSpeed = speed^;
 };
 
-// obby
-
 /* The above example is illustrative of the earlier point about `as` vis-a-vis objects.
     A warning underlines the speed val because objects implicitly contain `this`.
     `this` represents the object itself and not simply its behaviors or values. The
@@ -488,7 +490,16 @@ let toyotaSupra: car({. accelerate: unit => unit, brake: unit => unit, checkSpee
     such as `this#privateMethod`, or through assigning `this` as a casual variable.
     The latter can be achieved with the `as` keyword.
     
-    Append `as _this;` after toyotaSupra's opening bracket to clear the warning. */
+    Append `as _this;` after toyotaSupra's opening { bracket to clear the warning. This
+    syntax captures the `this` that is implicitly being passed into the object
+    construction and reassigns it as the casual `_this`. The usage of `_this` is purely
+    for illustrative purposes. The captured `this` can be assigned any casual value to
+    prevent the warning. `_t` or `_Steve` are equally valid. 
+    
+    As of this writing, April 4th, 2020, IDEs seem to have problems with correctly
+    underlining object warnings of this sort and will incorrectly underline parts of code.
+    Ignore them. The ultimate arbiter of corect code is the Bucklescript compiler and its
+    console output.*/
 
 
 /*** > Variant ***/

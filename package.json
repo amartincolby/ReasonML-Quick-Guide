@@ -1,6 +1,14 @@
 {
-  "name": "ReasonML Quick Guide",
-  "version": "0.1.0",
+  "name": "reasonml_quick_guide",
+  "description": "A one-page guide to ReasonML.",
+  "version": "1.0.0",
+  "homepage": "https://github.com/amartincolby/ReasonML-Quick-Guide",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amartincolby/ReasonML-Quick-Guide"
+  },
+  "author": "Aaron Martin-Colby <amartincolby@gmail.com> (https://github.com/amartincolby/)",
+  "license": "MIT",
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w -ws _ ",
@@ -13,8 +21,6 @@
     "ReasonReact",
     "reason-react"
   ],
-  "author": "Aaron Martin-Colby",
-  "license": "MIT",
   "dependencies": {
     "react": "16.8.1",
     "react-dom": "16.8.1",
