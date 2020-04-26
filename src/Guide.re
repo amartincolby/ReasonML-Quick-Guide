@@ -44,14 +44,14 @@ type thing = {
 // The compiler will infer that x is an int.
 let x = 5;
 
-// Functions will likewise infer argument and return types.
-let addInts = (a, b) => a + b;
+// Functions will likewise infer parameter and return types.
+let addInts = (a, b) => a + b; // inferred int for all values
 
 // Types can be functions
 type intFunction = (int, int) => int;
 let intAdder : intFunction = (x, y) => x + y;
 
-// Let bindings are block scoped with `{}`.
+// Let bindings are block scoped with braces `{}`.
 if (true) {
     let val1 = "best of times";
     print_endline(val1)
@@ -84,6 +84,7 @@ let blockScope = () => {
     "Return string"
 }
 
+
 /*** Destructuring ***/
 
 // Data structures can be "destructured" for assignment to individual variables.
@@ -94,20 +95,20 @@ print_endline(name);
 print_int(classNumber);
 
 type person = {
-  firstName: string,
-  age: int,
+  firstName : string,
+  age : int,
 };
 
 // Variable extractions from records must match field names.
-let bjorn = {firstName: "Bjorn", age: 28};
+let bjorn = {firstName : "Bjorn", age : 28};
 let {firstName, age} = bjorn;
 
 // Extractions can be re-named before being bound.
-let {firstName: bName, age: bAge} = bjorn;
+let {firstName : bName, age : bAge} = bjorn;
 
 // Fields can be ignored either through omission or the anonymous variable `_`.
-let {firstName: cName} = bjorn;
-let {firstName: dName, age: _} = bjorn;
+let {firstName : cName} = bjorn;
+let {firstName : dName, age : _} = bjorn;
 
 
 /*** Type annotation ***/
@@ -115,7 +116,7 @@ let {firstName: dName, age: _} = bjorn;
 // Type annotations can be added when inference does not suffice.
 let y: int = 5;
 
-// Function arguments and returns can be annotated.
+// Function parameters and returns can be annotated.
 let add2 = (a: int, b: int): int => a + b;
 
 // A type can be aliased using the `type` keyword.
@@ -156,29 +157,147 @@ let copyOfMyMutableNumber = myMutableNumber^;
 // https://stackoverflow.com/questions/26769403/as-keyword-in-ocaml
 // https://reasonml.chat/t/an-explanation-of-as/1912
 
-// See obby
 
 /* `as` is also used in object assignment in a somewhat similar fashion. See the below
     section on objects to see an explanation. */
 
 
 /*----------------------------------------------
- * Basic types and operators
+ * Basic operators
  *----------------------------------------------
  */
 
+/*** > Boolean ***/
+
+// A boolean can be either true or false.
+let isLearning = true;
+
+true && false;   // - : bool = false;  Logical and
+true || false;   // - : bool = true;   Logical or
+!true;           // - : bool = false;  Logical not
+
+'a' > 'b'; // - bool : false
+5 < 42;    // - bool : true
+
+
+/* Equality */
+
+/* Although Reason has `==` and `===`, they are different from JavaScript.
+    Structural Equality, using the double-glyph operator, does a deep
+    comparison of each entity's structure. Use this judiciously since
+    comparing large structures is expensive. */
+
+type author = {
+    name : string,
+    age  : int
+};
+
+let author1 = {
+    name : "Charles Dickens",
+    age  : 58
+};
+
+let author2 = {
+    name : "Charles Dickens",
+    age  : 58
+};
+
+let author3 = {
+    name : "Victor Hugo",
+    age  : 83
+};
+
+author1 == author2; // - : bool = true
+author1 == author3; // - : bool = false
+author1 != author3; // - : bool = true
+
+/* Any attempt at using greater-than or less-than vis-à-vis structures will
+    trigger a structural comparison. The comparison will return a boolean as 
+    soon as a difference is discovered and will not continue to do a complete
+    comparison. */
+
+let bigObj = [10, 10000000, 10000000];
+let smallObj = [11, 1, 1];
+
+bigObj > smallObj; // - : bool = false
+
+/* Because 10 and 11 are different, and 10 is smaller than 11, false is returned
+    even though the next two values are much larger. */
+
+/* Referential, or physical, equality, using the triple-glyph operator, compares
+    the identity of each entity. */
+
+author1 === author2; // - : bool = false
+author1 === author1; // - : bool = true
+
+
+/* Comparing Values */
+
+// The equality operators work differently for values instead of structures.
+// Both `==` and `===` will become strict equality `===` when compiled to JavaScript.
+// Attempting to compare two different types will cause a compile error.
+
+let myString1 = "A world without string is chaos.";
+let myString2 = "A world without string is chaos.";
+
+"A string" === "A string"; // - : bool = true
+"A string" == "A string";  // - : bool = true
+42 === 42;                 // - : bool = true
+42 == 42;                  // - : bool = true
+// 42 === "A string" // Error
+
+
+/*** Operator Assignment ***/
+
+/* Reason is a descendant of Lisp, which means that operations in the language are
+    conceptually similar to lists of operations and data. As such, while standard
+    infix operator notation is acceptable, so is prefix, or Polish, notation. */
+
+let polishAdder = (a, b) => (+) (a, b);
+
+// Operators are just functions that can be reassigned.
+let (+) = (a, b) => a * b;
+
+// Custom operators can use any of the reserved characters.
+let ($) = (a, b) => a - b + 3;
+4 $ 3   // - : int = 4
+
+
+/*----------------------------------------------
+ * Basic types
+ *----------------------------------------------
+ */
+
+/*** A note on the standard library (StdLib) ***/
+
+/* All of Reason's types and structures have modules in the standard library. In general,
+    it is best to interface with your data via these modules. The abstraction helps
+    enable cross-compatibility with native and JavaScript while also providing the usual
+    security and guarantees that come with using a standard library.
+
+    While a complete discussion of the StdLib is outside the scope of this tutorial,
+    overviews will be given when pertinent.
+    
+    The list of modules can be found here: https://reasonml.github.io/api/index_modules.html */
+
+
 /*** > String ***/
+
+/* Strings in Reason map over to strings in JavaScript well. Strings in JavaScript are
+    actually immutable under the covers, with the act of changing a string actually creating
+    an entirely new string and associating it with a variable name.
+
+    In OCaml, strings can be directly changed, although this unsafe behavior is highly
+    discouraged. Further, since JavaScript cannot do this, attempting to do so runs the
+    risk of cross-compatibility problems. */
 
 // Use double quotes for strings.
 let greeting = "Hello world!";
 
-// A string can span multiple lines.
-// When compiled, new line characters are generated.
+// Strings can span multiple lines. When compiled, new line characters are generated.
 let aLongerGreeting = "Look at me,
 I'm a
 multi-line string";
-
-/* Quoted Strings */
 
 // The `{||}` syntax provides functionality akin to backtick strings in JavaScript.
 let quotedString = {|It was the best of times, it was the worst of times.|};
@@ -213,83 +332,6 @@ let emailSubject = "Hi " ++ name ++ ", you're a valued customer";
 let lastLetter = 'z';
 
 
-/*** > Boolean ***/
-
-// A boolean can be either true or false.
-let isLearning = true;
-
-true && false;   // - : bool = false;  Logical and
-true || false;   // - : bool = true;   Logical or
-!true;           // - : bool = false;  Logical not
-
-'a' > 'b'; // - bool : false
-5 < 42;    // - bool : true
-
-
-/* Equality */
-/* Although Reason has `==` and `===`, they are different from JavaScript.
-    Structural Equality Does a deep comparison of each entity's structure.
-    Use this judiciously since comparing large structures is expensive. */
-
-type author = {
-    name: string,
-    age: int
-};
-
-let author1 = {
-    name: "Charles Dickens",
-    age: 58
-};
-
-let author2 = {
-    name: "Charles Dickens",
-    age: 58
-};
-
-let author3 = {
-    name: "Victor Hugo",
-    age: 83
-};
-
-author1 == author2; // - : bool = true
-author1 == author3; // - : bool = false
-author1 != author3; // - : bool = true
-
-/* Any attempt at using greater-than or less-than vis-à-vis structures will
-    trigger a structural comparison. The comparison will return a boolean as 
-    soon as a difference is discovered and will not continue to do a complete
-    comparison. */
-
-let bigObj = [10, 10000000, 10000000];
-let smallObj = [11, 1, 1];
-
-bigObj > smallObj; // - : bool = false
-
-/* Because 10 and 11 are different, and 10 is smaller than 11, false is returned
-    even though the next two values are much larger. */
-
-/* Referential, or physical, equality compares the identity of each entity. */
-
-author1 === author2; // - : bool = false
-author1 === author1; // - : bool = true
-
-
-/* Comparing Values */
-
-// The equality operators work differently for values instead of structures.
-// Both `==` and `===` will become strict equality `===` when compiled to JavaScript.
-// Attempting to compare two different types will cause a compile error.
-
-let myString1 = "A world without string is chaos.";
-let myString2 = "A world without string is chaos.";
-
-"A string" === "A string"; // - : bool = true
-"A string" == "A string";  // - : bool = true
-42 === 42;                 // - : bool = true
-42 == 42;                  // - : bool = true
-// 42 === "A string" // Error
-
-
 /*** > Integer ***/
 
 1 + 1;          // - : int = 2
@@ -301,9 +343,12 @@ let myString2 = "A world without string is chaos.";
 8 / 3;           // - : int = 2
 8 / 5;           // - : int = 1
 
+/* The StdLib provides modules for int32 and int64 operations. Unless these exact
+    precisions are necessary, the standard int type provides the best
+    cross-compatibility and performance. */
+
 
 /*** > Float ***/
-// Floating point operators have a `.` suffix.
 
 1.1 +. 1.5;     // - : float = 2.6
 18.0 -. 24.5;   // - : float = -6.5
@@ -311,36 +356,25 @@ let myString2 = "A world without string is chaos.";
 16.0 /. 4.0;    // - : float = 4.0
 
 
-/*** Operator Assignment ***/
-
-/* Reason is a descendant of Lisp, which means that operations in the language are
-    conceptually similar to lists of operations and data. As such, while standard
-    infix operator notation is acceptable, so is prefix, or Polish, notation. */
-
-let polishAdder = (a, b) => (+) (a, b);
-
-// Operators are just functions that can be reassigned.
-let (+) = (a, b) => a * b;
-
-// Custom operators can use any of the reserved characters.
-let ($) = (a, b) => a - b + 3;
-4 $ 3   // - : int = 4
-
-
 /*** > Tuple ***/
-/*
-    - contained in parentheses
-    - two or more values
-    - immutable
-    - ordered
-    - fixed-sized at creation time
-    - heterogeneous (can contain different types of values)
- */
+
+/* Tuples are a common data structure found in many languages. For JavaScript developers,
+    the argument list passed into a function is the closest analog to a true tuple.
+
+    Tuples are named from the suffix for counting groups, such as double, quintuple,
+    or dectuple. For programming purposes, an actual number is used instead of a
+    latin-based prefix. So instead of triple, 3-tuple is used.
+    
+    Tuples can contain two or more values, are immutable and of fixed size, ordered, and
+    importantly are heterogenous. It is the last point that most distinguishes tuples from
+    arrays or lists. */
 
 let teamMember = ("John", 25);
 
-// Type annotation matches the values
-let position2d: (float, float) = (9.0, 12.0);
+// Values can be explicitly typed.
+let position2d : (float, float) = (9.0, 12.0);
+type namedPoint = (string, float, float);
+let city1 = ("London", 51.507222, -0.1275);
 
 // An individual value in a tuple cannot be used independently.
 // To extract a value from a 2-tuple, use the standard library functions `fst()` and `snd()`.
@@ -353,54 +387,59 @@ let (theAnswer, _, _) = threeTuple; // theAnswer = 42
 
 
 /*** > Record ***/
-/*
-    - Similar to JavaScript object literals
-    - A structure of key:value pairs
-    - Immutable by default
-    - Fixed names and types
-*/
 
-// A record must have an explicit type.
+/* Records play part of the role that object literals play in JavaScript and appear most like
+    them syntactically. They are collections of key:value pairs that are by default, but not
+    necessarily, immutable. The shape of a record -- to wit its key names and value types, but
+    not the order in which they appear -- is fixed. This shape must be declared with a type. */
+
+// Like variable names, a type must begin with an underscore or lowercase letter.
 type trainJourney = {
-    destination: string,
-    capacity: int,
-    averageSpeed: float,
+    destination  : string,
+    capacity     : int,
+    averageSpeed : float,
 };
 
 // Once declared, types can be inferred by the compiler.
+// The below is inferred as type trainJourney
 let firstTrainJourney = {
-    destination: "London",
-    capacity: 45,
-    averageSpeed: 120.0
+    destination  : "London",
+    capacity     : 45,
+    averageSpeed : 120.0,
 };
 
-// Access a property using dot notation.
+// Use dot notation to access properties.
 let maxPassengers = firstTrainJourney.capacity;
 
-// New records can be created from previous records via the spread operator `...`
-let secondTrainJourney = {...firstTrainJourney, averageSpeed: 120.0};
+/* If used immutably, records are not directly changed. Instead, copies of previous records
+    are created with new values assigned to particular keys. Creating a new record from a
+    previous record uses the spread operator. */
 
-// A record property can be made mutable with the `mutable` keyword.
+let secondTrainJourney = {...firstTrainJourney, averageSpeed: 105.0};
+
+/* Using records mutably is not generally recommended. That said, it is a powerful tool in
+    certain situations. A record cannot be made mutable in its entirety. Individual keys can
+    be made mutable with the `mutable` keyword. */
+
 type breakfastCereal = {
-  name: string,
-  mutable amount: int,
+  name           : string,
+  mutable amount : int,
 };
 
-let tastyMuesli = {
-    name: "Tasty Muesli TM",
-    amount: 500
+let frostedFlakes = {
+    name   : "Kellog's Frosted Flakes",
+    amount : 500,
 };
 
-tastyMuesli.amount = 200;
+frostedFlakes.amount = 200;
 
-// Punning can reduce redundant typing.
-// Match a variable's name & type to a record's key.
-
-let name = "Chex";
+/* Match a variable's name & type to a record's key:value to allow "punning", or assigning
+    via inferred structure. */
+let name = "General Mills Chex";
 let amount = 250;
-let tastyChex = {
+let chex = { // Note how the type did not need to be explicitly declared
     name,
-    amount
+    amount,
 };
 
 
@@ -408,7 +447,7 @@ let tastyChex = {
 
 /* Objects are similar to records but are more class-like in their semantics.
     Notably, they are more like the original conception of objects in that they
-    are defined by their behaviors, to wit they only expose methods; all values
+    are defined BY THEIR BEHAVIORS, to wit they only expose methods; all values
     are private.
     
     Like classes, objects have private and public methods, identified with the
@@ -428,25 +467,26 @@ let newObject = {
     };
 };
 
-/* Objects do not need types but can have them. There are two categories of type,
-    open and closed, and are identified with either one or two dots as the leading
+/* Objects do not need types but can have them. There are two categories of type:
+    open and closed. They are identified with either one or two dots as the leading
     token of the type's structure. The single dot in the type indicates that this
     is a closed type, meaning that all instances of this type must have a public
     interface of exactly this shape. */
 
 type truck = {
     .
-    buildTruck: (~make:string, ~model:string) => string
+    buildTruck : (~make:string, ~model:string) => string
 };
-
-/* If using an IDE, the below object will contain a warning underlining `val` referencing
-    the unused variable `this`. For the time being, ignore this warning. It will be
-    discussed shortly. */
 
 let newTruck: truck = {
     val drive = 4;
     pub buildTruck = (~make, ~model) => {j|You built a new $make $model with $drive-wheel drive.|j};
-    // pub intruder = "I'm not supposed to be here!"; // This will cause a shape error.
+
+    // This method is private and will not violate the public shape.
+    pri buildEngine = (~cylinders) => {j|You installed a $(cylinders)-cylinder engine.|j}
+
+    // This public method would throw an error because it violates the object shape.
+    // pub intruder = "I'm not supposed to be here!";
 };
 
 let toyotaTundra = newTruck#buildTruck(~make="Toyota", ~model="Tundra");
@@ -463,16 +503,21 @@ type car('a) = {
 } as 'a;
 
 /* Since open types do not mandate a shape, they are necessarily polymorphic,
-    meaning that a fixed object type must be provided. The returned type is
-    then classified as the supplied type with the `as` keyword.
+    meaning that a closed type must be provided when this object is instantiated.
+    The object that is created is classified as the supplied type with the `as` keyword.
     
     The undetermined type is represented by the `'a`, commonly referred to as
     "alpha." Alpha's sibling is `'b`, known as "beta." Alpha commonly represents
     a function's input type while beta represents its return type. This is only
     convention, as the ' simply identifies a type label and the succeeding string
-    can be anything. 'steve is equally valid to 'a. */
+    can be anything. 'steve is equally valid to 'a. 
+    
+    Below, since `car` is an open type, a closed type is supplied in-line. This in-line
+    type is anonymous and only available to the toyotaSupra that has been created. A
+    named type could be created and passed in as well. */
 
 let toyotaSupra:  car({. accelerate: unit => unit, brake: unit => unit, checkSpeed: int}) = {
+    // as _this;
     val speed = ref(0);
     pub accelerate = () => {
         if (speed^ < 155) {speed := speed^ + 1};
@@ -490,7 +535,7 @@ let toyotaSupra:  car({. accelerate: unit => unit, brake: unit => unit, checkSpe
     such as `this#privateMethod`, or through assigning `this` as a casual variable.
     The latter can be achieved with the `as` keyword.
     
-    Append `as _this;` after toyotaSupra's opening { bracket to clear the warning. This
+    Uncomment the `as _this;` after toyotaSupra's opening bracket to clear the warning. This
     syntax captures the `this` that is implicitly being passed into the object
     construction and reassigns it as the casual `_this`. The usage of `_this` is purely
     for illustrative purposes. The captured `this` can be assigned any casual value to
@@ -498,17 +543,27 @@ let toyotaSupra:  car({. accelerate: unit => unit, brake: unit => unit, checkSpe
     
     As of this writing, April 4th, 2020, IDEs seem to have problems with correctly
     underlining object warnings of this sort and will incorrectly underline parts of code.
-    Ignore them. The ultimate arbiter of corect code is the Bucklescript compiler and its
-    console output.*/
+    Ignore them. The ultimate arbiter of correct code is the Bucklescript compiler and its
+    console output.
+
+    *** A note on Objects ***
+
+    The reader perhaps has discerned conflict inherent to objects as described above and
+    has forseen a project's future where massive numbers of objects, both open and closed,
+    have been created to better match patterns found in languages like Java or C#. These
+    objects would rapidly become brittle, fragile, and difficult to extend, even with type
+    safety. A full dissection of these concerns is beyond the scope of this tutorial, but 
+    suffice it to say that while these abilities are in the language, using them to mimic
+    OOP patterns from other languages is widely seen as bad practice. They have their place,
+    but only within the context of broader functional concepts. */
 
 
 /*** > Variant ***/
-/*
-    - A variant is a sort of plural type.
-    - The possible states of a variant are called "constructors".
-    - Constructors are not types themselves; they are state identifiers.
-    - Constructors are symbols, meaning they are unique within the current scope.
-*/
+
+/* A variant is a type declaration with multiple states. The possible states are called
+    constructors because they are not types themselves; they are symbolic identifiers. Further,
+    since they are symbols, they should be unique within the current scope, just as any other
+    declaration. */
 
 type authType =
     | GitHub
@@ -521,8 +576,25 @@ let userPreferredAuth = GitHub;
 /* The compiler now knows that `userPreferredAuth` is of type `authType`. and
     that it must necessarily be in one of four states. */
 
-// Constructors are called constructors because they accept types as arguments.
-// The types can themselves be variants.
+/* Just like any other declaration, how variant constructors are inferred by the type system
+    can be changed as the lexical scope progresses. Below, the `authTypeGit` also contains a
+    constructor called `GitHub`. As such, any later uses of the `GitHub` constructor will cause
+    the compiler to infer a type of `authTypeGit`. For `gitUser1`, this inference is prevented
+    through explicit type declaration.
+
+    This situation highlights an interesting aspect of ReasonML's type system: requiring explicit
+    type declarations becomes a code smell. */
+
+type authTypeGit =
+    | GitHub
+    | Gitlab
+    | Gitter;
+
+let gitUser1 : authType = GitHub;
+let gitUser2 = GitHub;
+
+/* Constructors "construct" because they accept types as parameters. These types can
+    themselves be variants. */
 
 type userRegion =
     | Asia
@@ -549,32 +621,26 @@ let newUser = Moderator(GitHub, Europe);
     as a monad. For the purposes of this section, a monad is a wrapper of known
     structure that can contain other data. The benefits of monads are as a
     high-level abstraction of computation and structure. They will be further
-    discussed in a later section.  */
+    discussed in a later section. */
 
 Random.self_init();
-let thingIsHere = Random.bool();
+let isThingHere = Random.bool();
 
-let isThingHere =
-    if (thingIsHere) {
-        Some("Thank you, Thing.");
-    } else {
-        None;
-    };
-    
-/* isThingHere is of type `option` and possibly contains a string.
-    Later, the compiler will require code that references `isThingHere`
-    to account for both states. */
+// Work in progress.
+
+        // sayToThing("Thank you, Thing.");
+
+/* isThingHere is of type `option` and either returns a Some() that contains a
+    string or None which contains nothing. The compiler will require code that references
+    `isThingHere` to account for both states. */
 
 
 /*** > List ***/
-/*
-    - Singly linked lists
-    - Immutable
-    - Ordered
-    - Homogenous
-    - Fast at prepending and splitting
-    - Slow at random access & updates
-*/
+
+/* A singly-linked list is a language-level structure in ReasonML. They are standard
+    singly-linked lists in that they are identified by their heads, they are ordered, their
+    consituents are immutable and homogenous, prepending and splitting are constant-time
+    operations, while access & updates are linear time operations. */
 
 // A list is declared with `[ ]` with comma-separated values.
 let userIds = [1, 4, 8];
@@ -583,18 +649,23 @@ let userIds = [1, 4, 8];
 type idList = list(int);
 type attendanceList = list(string);
 
-/* Just like records, lists are immutable but the contents of a list
-    can be copied using the spread operator. */
-let newUserIds = [101, 102, ...userIds];
+/* Just like records, lists are immutable but the contents of a list can be copied using
+    the spread operator. The spread does not work exactly like JavaScript in that this is
+    syntactic sugar for OCaml's `::` operator. As such, you cannot spread a list for
+    appending, only prepending. */
+
+let newUserIds1 = [101, 102, ...userIds];
+// let newUserIds1 = [...userIds, 101, 102]; // Invalid use
+
 
 /*** > Array ***/
-/* Arrays are like lists except they are
-    - Mutable
-    - Slow at prepending and splitting
-    - Fast at random access & updates
-    - Fixed size when targeting native
-    - Variable size when targeting JavaScript
-*/
+
+/* Arrays are similar to arrays in other languages. Because ReasonML straddles two worlds,
+    native and JavaScript, the characteristics of arrays differ slightly depending on which
+    world is being targeted. When transpiling to JavaScript, arrays are variable size and
+    can grow at runtime. When targeting native applications, arrays are fixed size. This
+    behavior is abstracted from the developer and usage of the Js.Array module is acceptable
+    for native work. */
 
 // An array is declared with `[| |]` with comma-separated values.
 let languages = [|"Reason", "JavaScript", "OCaml"|];
@@ -608,20 +679,22 @@ languages[1] // "JavaScript"
  *----------------------------------------------
  */
 
-/*
-    - Functions use implicit return, i.e. there is no `return` command.
-    - The final expression in a function block is returned.
-    - There is no early return. The final expression *must* be the return.
-*/
+/* Since ReasonML is a functional language, functions are distinctly different from many
+    other languages. Since they are treated as evaluations, to wit evaluations of
+    mathematical functions, there is no such thing as a `return` command. Whatever value
+    exists at the end of the evaluation block is implicitly returned. Further, all
+    functions MUST return something. If no final value is present, the function will return
+    the special value `unit`, which will be discussed shortly. */
 
 // Fat arrow syntax declares a function.
-let signUpToNewsletter = email => "Thanks for signing up " ++ email;
+// Parenthesis are optional on single-parameter functions.
+let signUpToNewsletter = (email) => "Thanks for signing up " ++ email;
 
-let getEmailPrefs = email => {
-  let message = "Update settings for " ++ email;
-  let prefs = ["Weekly News", "Daily Notifications"];
+let getEmailPrefs = (email) => {
+    let message = "Update settings for " ++ email;
+    let prefs = ["Weekly News", "Daily Notifications"];
 
-  (message, prefs); // Implicitly returned
+    (message, prefs); // Implicitly returned
 };
 
 // Call a function with the standard syntax.
@@ -650,64 +723,31 @@ let noReturn = (input) : unit => { print_endline("I just print " ++ input) };
     if anything is returned. */
 
 
-/*** > Labeled Arguments ***/
+/*** > Labeled Paramters/Arguments ***/
 
 type position = {
-    posx: float,
-    posy: float
+    posx : float,
+    posy : float
 }
 
-// Arguments can be labeled with the `~` symbol.
-let moveTo = (~x, ~y) => {posx: x, posy: y};
+// Parameters can be labeled with the `~` symbol.
+let moveTo = (~x, ~y) => {posx : x, posy : y};
 
 // Any order of labeled arguments is acceptable.
 moveTo(~x=7.0, ~y=3.5);
 moveTo(~y=3.5, ~x=7.0);
 
-// Labeled arguments can also have an alias used within the function.
+// Labeled parameters can also have an alias used within the function.
 let getMessage = (~message as msg) => "Message for you, sir... " ++ msg;
 
-// Labeled arguments support explicit typing.
+// Labeled parameters support explicit typing.
 let logMessage = (~message: string) => {
-  print_endline(message);
+    print_endline(message);
 };
 
 let logAnotherMessage = (~message as msg: string) => {
-  print_endline(msg);
+    print_endline(msg);
 };
-
-
-/*** > Pipe ***/
-
-// Functions can be called with the pipeline operator.
-
-// Pipe syntax is the opposite of traditional function calls.
-// `myFunction(myValue)` says "perform myFunction with myValue."
-// myValue -> myFunction says "send myValue to myFunction."
-// This facilitates sending of one function's output to another's input.
-
-let subtract = (x, y) => { x - y };
-let subtractTwo = subtract(_, 2);
-
-3 -> subtractTwo; // - : int = 1
-
-/* The thin arrow syntax is called "pipe-first" since the value passed in
-    is used as the first argument in the receiving function. */
-    
-let subtractFromThree = 3 -> subtract;
-
-/* The `|>` operator is called pipe-last, or confusingly, the
-    reverse-application operator, which passes in the final argument. */
-let subtractFive = 5 |> subtract;
-
-// If a function accepts a single argument, the pipe operators are identical.
-
-/* Pipes make it easier to chain code together */
-let addOne = a => a + 1;
-let divByTwo = a => a / 2;
-let multByThree = a => a * 3;
-
-let pipedValue = 3 -> addOne -> divByTwo -> multByThree; // - : int = 6
 
 
 /*** > Currying ***/
@@ -732,34 +772,82 @@ let divTenBy = divide(_, 10);
 divSixBy(2); /* - : int = 3  */
 divTenBy(2); /* - : int = 5  */
 
-// Labeled arguments allow currying without the need for the anonymous variable.
+// Labeled parameters allow currying without the need for the anonymous variable.
 
 let labeledDiv = (~denom, ~numr) => numr / denom;
-let labeledDivBySix = labeledDiv(~denom=6);
-let labeledDivByTwo = labeledDiv(~denom=2);
+let labeledDivBySix = labeledDiv(~denom = 6);
+let labeledDivByTwo = labeledDiv(~denom = 2);
 
 labeledDivBySix(~numr=36);  /* - : int = 6 */
 labeledDivByTwo(~numr=4);   /* - : int = 2  */
 
 
-/*** > Optional Labeled Arguments ***/
+/*** > Optional Labeled Parameters/Arguments ***/
 
-// Using the `=?` qualifier makes an argument optional.
-// The final argument of a function with optional arguments must be unit `()`.
-// When called, the unit argument prevents auto-currying.
+/* Using the `=?` qualifier makes a parameter optional, meaning that it is turned
+    into an Option type. This means that the parameter cannot simply be used in the
+    function. In the below example, a switch statement is used. This functionality
+    will be discussed shortly, but is mostly self-explanatory here.
+
+    The final parameter of a function with optional arguments must be unit `()`.
+    This syntax prevent currying. */
 
 let greetPerson = (~name, ~greeting=?, ()) => {
-  switch (greeting) {
-  | Some(greet) => greet ++ " " ++ name
-  | None => "Hi " ++ name
-  };
+    switch(greeting) {
+        | Some(greet) => greet ++ name
+        | None => "Hello, " ++ name
+    };
 };
 
-// Call greetPerson without the optional labeled argument.
+// Calling a function without optional arguments requires unit as the final argument.
 greetPerson(~name="Kate", ());
 
-// Call greetPerson with all arguments.
-greetPerson(~name="Marco", ~greeting="How are you today,");
+
+/*** > Pipe ***/
+
+/* ReasonML has two ways to call functions: the standard syntax and the pipeline
+    operator. 
+
+    Conceptually, it is simple. Where `myFunction(value)` says "perform myFunction
+    with this value", `(value) -> myFunction` says "send myValue to myFunction."
+    
+    There is actually a subtle semantic difference between the two. Where the first
+    calls the function, the second does not. Instead, it takes a value and applies
+    a function to it. From a semantic perspective, this means that calling a
+    function either with incorrect data or no data is impossible, since the function
+    is not what is being called.
+    
+    From a syntactic standpoint, this facilitates the easy passing of one function's
+    output to another's input. Users of command line interfaces such as Bash will be
+    accustomed to this pattern.
+
+    People who are staying abreast of JavaScript development may notice that this
+    syntax is currently in the experimental stage in the language specification.
+    JavaScript is adopting many ideas from the ML line of languages. */
+
+let subtract = (x, y) => { x - y };
+let subtractTwo = subtract(_, 2);
+
+3 -> subtractTwo; // int 1
+
+/* The thin arrow syntax is called "pipe-first" since the value passed in
+    is used as the first argument in the receiving function. */
+    
+let subtractFromThree = 3 -> subtract;
+
+/* The `|>` operator is called pipe-last, or confusingly, the
+    reverse-application operator, which passes in the final argument.
+    
+    For single-parameter functions, the pipe operators behave identically. */
+
+let subtractFive = 5 |> subtract;
+
+// Pipes allow easy function chaining
+let addOne = a => a + 1;
+let divByTwo = a => a / 2;
+let multByThree = a => a * 3;
+
+let pipedValue = 3 -> addOne -> divByTwo -> multByThree; // int 6
 
 
 /*----------------------------------------------
@@ -824,8 +912,8 @@ let loopStart = 1;
 let loopEnd = 42;
 
 for (x in loopStart to loopEnd) {
-  print_int(x);
-  print_string(" ");
+    print_int(x);
+    print_string(" ");
 };
 
 // Reason allows slightly easier decrementing in loops with the `downto` statement.
@@ -834,8 +922,8 @@ let dLoopStart = 42;
 let dLoopEnd = 1;
 
 for (x in dLoopStart downto dLoopEnd) {
-  print_int(x);
-  print_string(" ")
+    print_int(x);
+    print_string(" ");
 };
 
 /* While loop */
@@ -858,6 +946,8 @@ while (testVariable^) {
     complex but it is actually rather straightforward. A complete discussion
     of pattern matching on a theoretical level is beyond the scope of this
     tour, but it is encouraged to read the Wikipedia page on the subject.
+
+    https://en.wikipedia.org/wiki/Pattern_matching
     
     In Reason, as with many functional languages, pattern matching is used
     for all comparisons. Sometimes this acts like common value comparisons in
@@ -866,22 +956,31 @@ while (testVariable^) {
     the programmer if all possible patterns are not accounted for. This power
     becomes apparent with `switch` statements. */
 
+
 /*** > Switch ***/
 
 /* The `switch` statement is similar to JavaScript's `switch` but enhanced by
     the power of pattern matching. Indeed, in OCaml, it is called `Match`. In
     this example, the previous `authType` variant is used. */
+
+type dndPlayer =
+    | DungeonMaster
+    | Barbarian
+    | Thief
+    | Wizard;
+
+let newDndPlayer = Barbarian;
    
 let loginMessage =
-    switch (userPreferredAuth) {
-    | GitHub   => "Login with your GitHub credentials."
-    | Facebook => "Login with your Facebook account."
-    | Google   => "Login with your Google account"
-    | Password => "Login with your email and password."
-};
+    switch (newDndPlayer) {
+        | DungeonMaster => "May adventurers speak of your tales for generations."
+        | Barbarian     => "May your enemies crumble before your might."
+        | Thief         => "May your enemies see nothing before their deaths."
+        | Wizard        => "May your enemies burn from the power in your hands."
+    };
 
-/* All four possible states of the authType type must be accounted for. If the
-    switch case for `Password` were deleted, the error "this pattern-matching
+/* All four possible states of the dndPlayer type must be accounted for. If the
+    switch case for `Wizard` were deleted, the error "this pattern-matching
     is not exhaustive." would be raised by the compiler. Similarly, whenever
     an `option` is used, any `switch` statement must take into account both
     possible states, `some()` and `none`. */
@@ -889,9 +988,9 @@ let loginMessage =
 let userId = Some(23);
 let alertMessage =
     switch (userId) {
-    | Some(id) => "Welcome, your ID is" ++ string_of_int(id)
-    | None => "You don't have an account!"
-};
+        | Some(id) => "Welcome, your ID is" ++ string_of_int(id)
+        | None => "You don't have an account!"
+    };
 
 /* As stated, pattern matching is not simply a comparison of values. Complex
     structures can be tested and matched. In this case, the possible analysis
@@ -918,7 +1017,7 @@ switch (event) {
 };
 
 let importantNumbers = [42, 2001, 31459];
-// let [answer, yearWeMakeContact, pi] = importantNumbers;
+let [answer, yearWeMakeContact, pi] = importantNumbers;
 
 /** The above code triggers a non-exhaustive error because lists and arrays
  * are of potentially variable size. In this example, the list is a known fixed size,
@@ -1010,23 +1109,23 @@ let messageToEvan =
 
 // Create a new module with the `module` statement.
 module Staff = {
-  type role =
-    | Delivery
-    | Sales
-    | Other;
+    type role =
+        | Delivery
+        | Sales
+        | Other;
 
-  type staffMember = {
-    employeeName: string,
-    role
-  };
+    type staffMember = {
+        employeeName: string,
+        role,
+    };
 
   let defaultRole = Other;
 
   let getRoleDirectionMessage = staff =>
     switch (staff.role) {
-    | Delivery => "Deliver it like you mean it!"
-    | Sales => "Sell it like only you can!"
-    | Other => "You're an important part of the team!"
+        | Delivery => "Deliver it like you mean it!"
+        | Sales => "Sell it like only you can!"
+        | Other => "You're an important part of the team!"
     };
 };
 
@@ -1064,8 +1163,8 @@ module SpecializedStaff = {
 
   let getMeetingTime = staff =>
     switch (staff) {
-    | Other => 11_15 /* - : int = 1115; Underscores are for formatting only  */
-    | _ => 9_30
+        | Other => 11_15 /* - : int = 1115; Underscores are for formatting only  */
+        | _ => 9_30
     };
 };
 
@@ -1146,7 +1245,7 @@ module Module_in_external_file = { // From Module_in_external_file.re
         
     type externalType = {
         key1: string,
-        key2: int
+        key2: int,
     };
 }
 
@@ -1225,9 +1324,9 @@ module Module10: {
 };
 
 type myVariant =
-  | State1
-  | State2
-  | State3(string);
+    | State1
+    | State2
+    | State3(string);
 
 let aThing = State2;
 
@@ -1428,7 +1527,7 @@ let make = (~food) => {
     languages. They simply arose in usage in that context because they were necessary for solving
     certain problems. Their utility has become apparent, with other languages adopting common monads
     like Option. Scala, Kotlin, C#, and Java all now have optional values as part of the language.
-    Indeed, monads are becoming common. JavaScript has perhaps the most widely used monad in
+    Indeed, monads generally are becoming common. JavaScript has perhaps the most widely used monad in
     computer history in the form of the promise.
     
     The purpose of this section therefore is to bring focus to their genesis and hopefully explain

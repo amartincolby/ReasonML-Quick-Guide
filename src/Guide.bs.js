@@ -14,8 +14,6 @@ var Caml_oo_curry = require("bs-platform/lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("bs-platform/lib/js/camlinternalOO.js");
 var Caml_exceptions = require("bs-platform/lib/js/caml_exceptions.js");
 
-var shared = ["buildTruck"];
-
 function addInts(a, b) {
   return a + b | 0;
 }
@@ -47,12 +45,6 @@ var myMutableNumber = {
 myMutableNumber.contents = 240;
 
 var copyOfMyMutableNumber = myMutableNumber.contents;
-
-var world = "🌍";
-
-var helloWorld = "hello, " + (String(world) + "");
-
-var emailSubject = "Hi John Wayne, you're a valued customer";
 
 var author1 = {
   name: "Charles Dickens",
@@ -109,22 +101,28 @@ function $(a, b) {
   return Caml_int32.imul(a - b | 0, 3);
 }
 
+var world = "🌍";
+
+var helloWorld = "hello, " + (String(world) + "");
+
+var emailSubject = "Hi John Wayne, you're a valued customer";
+
 var secondTrainJourney = {
   destination: "London",
   capacity: 45,
-  averageSpeed: 120.0
+  averageSpeed: 105.0
 };
 
-var tastyMuesli = {
-  name: "Tasty Muesli TM",
+var frostedFlakes = {
+  name: "Kellog's Frosted Flakes",
   amount: 500
 };
 
-tastyMuesli.amount = 200;
+frostedFlakes.amount = 200;
 
-var name = "Chex";
+var name = "General Mills Chex";
 
-var tastyChex = {
+var chex = {
   name: name,
   amount: 250
 };
@@ -167,17 +165,29 @@ CamlinternalOO.init_class($$class);
 
 var newObject = obj_init(0);
 
-var $$class$1 = CamlinternalOO.create_table(shared);
+var $$class$1 = CamlinternalOO.create_table(["buildTruck"]);
 
-var ids$1 = CamlinternalOO.new_methods_variables($$class$1, shared, ["drive"]);
+var ids$1 = CamlinternalOO.new_methods_variables($$class$1, [
+      "buildTruck",
+      "buildEngine"
+    ], ["drive"]);
 
 var buildTruck = ids$1[0];
 
-var drive = ids$1[1];
+var buildEngine = ids$1[1];
 
-CamlinternalOO.set_method($$class$1, buildTruck, (function (self$2, make, model) {
-        return "You built a new " + (String(make) + (" " + (String(model) + (" with " + (String(self$2[drive]) + "-wheel drive.")))));
-      }));
+var drive = ids$1[2];
+
+CamlinternalOO.set_methods($$class$1, [
+      buildTruck,
+      (function (self$2, make, model) {
+          return "You built a new " + (String(make) + (" " + (String(model) + (" with " + (String(self$2[drive]) + "-wheel drive.")))));
+        }),
+      buildEngine,
+      (function (self$2, cylinders) {
+          return "You installed a " + (String(cylinders) + "-cylinder engine.");
+        })
+    ]);
 
 function obj_init$1(env) {
   var self = CamlinternalOO.create_object_opt(0, $$class$1);
@@ -250,9 +260,7 @@ var toyotaSupra = obj_init$2(0);
 
 Random.self_init(/* () */0);
 
-var thingIsHere = Random.bool(/* () */0);
-
-var isThingHere = thingIsHere ? "Thank you, Thing." : undefined;
+var isThingHere = Random.bool(/* () */0);
 
 var userIds = /* :: */[
   1,
@@ -265,14 +273,14 @@ var userIds = /* :: */[
   ]
 ];
 
-var newUserIds_001 = /* :: */[
+var newUserIds1_001 = /* :: */[
   102,
   userIds
 ];
 
-var newUserIds = /* :: */[
+var newUserIds1 = /* :: */[
   101,
-  newUserIds_001
+  newUserIds1_001
 ];
 
 var languages = [
@@ -331,34 +339,6 @@ function logAnotherMessage(msg) {
   return /* () */0;
 }
 
-function subtract(x, y) {
-  return x - y | 0;
-}
-
-function subtractTwo(__x) {
-  return __x - 2 | 0;
-}
-
-function subtractFromThree(param) {
-  return 3 - param | 0;
-}
-
-function subtractFive(param) {
-  return 5 - param | 0;
-}
-
-function addOne(a) {
-  return (a << 0);
-}
-
-function divByTwo(a) {
-  return a / 2 | 0;
-}
-
-function multByThree(a) {
-  return Caml_int32.imul(a, 3);
-}
-
 function divide(denom, numr) {
   return Caml_int32.div(numr, denom);
 }
@@ -393,13 +373,41 @@ function labeledDivByTwo(param) {
 
 function greetPerson(name, greeting, param) {
   if (greeting !== undefined) {
-    return greeting + (" " + name);
+    return greeting + name;
   } else {
-    return "Hi " + name;
+    return "Hello, " + name;
   }
 }
 
 greetPerson("Kate", undefined, /* () */0);
+
+function subtract(x, y) {
+  return x - y | 0;
+}
+
+function subtractTwo(__x) {
+  return __x - 2 | 0;
+}
+
+function subtractFromThree(param) {
+  return 3 - param | 0;
+}
+
+function subtractFive(param) {
+  return 5 - param | 0;
+}
+
+function addOne(a) {
+  return (a << 0);
+}
+
+function divByTwo(a) {
+  return a / 2 | 0;
+}
+
+function multByThree(a) {
+  return Caml_int32.imul(a, 3);
+}
 
 var newGreeting = "Good morning!";
 
@@ -423,7 +431,7 @@ while(testVariable.contents) {
   console.log("It's true.");
 };
 
-var loginMessage = "Login with your GitHub credentials.";
+var loginMessage = "May your enemies crumble before your might.";
 
 var userId = 23;
 
@@ -727,6 +735,12 @@ var y = 5;
 
 var myId = 101;
 
+var isLearning = true;
+
+var myString1 = "A world without string is chaos.";
+
+var myString2 = "A world without string is chaos.";
+
 var greeting = "Hello world!";
 
 var aLongerGreeting = "Look at me,\nI'm a\nmulti-line string";
@@ -741,12 +755,6 @@ var accountBalance = "You have \$500.00";
 
 var lastLetter = /* "z" */122;
 
-var isLearning = true;
-
-var myString1 = "A world without string is chaos.";
-
-var myString2 = "A world without string is chaos.";
-
 var teamMember = /* tuple */[
   "John",
   25
@@ -755,6 +763,12 @@ var teamMember = /* tuple */[
 var position2d = /* tuple */[
   9.0,
   12.0
+];
+
+var city1 = /* tuple */[
+  "London",
+  51.507222,
+  -0.1275
 ];
 
 var memberName = "John";
@@ -781,6 +795,10 @@ var amount = 250;
 
 var userPreferredAuth = /* GitHub */0;
 
+var gitUser1 = /* GitHub */0;
+
+var gitUser2 = /* GitHub */0;
+
 var newUser = /* Moderator */Block.__(1, [
     /* GitHub */0,
     /* Europe */1
@@ -801,6 +819,8 @@ var loopEnd = 42;
 var dLoopStart = 42;
 
 var dLoopEnd = 1;
+
+var newDndPlayer = /* Barbarian */1;
 
 var $$event = 5;
 
@@ -838,16 +858,6 @@ exports.add2 = add2;
 exports.myId = myId;
 exports.myMutableNumber = myMutableNumber;
 exports.copyOfMyMutableNumber = copyOfMyMutableNumber;
-exports.greeting = greeting;
-exports.aLongerGreeting = aLongerGreeting;
-exports.quotedString = quotedString;
-exports.multiLineQuotedString = multiLineQuotedString;
-exports.specialCharacters = specialCharacters;
-exports.world = world;
-exports.helloWorld = helloWorld;
-exports.accountBalance = accountBalance;
-exports.emailSubject = emailSubject;
-exports.lastLetter = lastLetter;
 exports.isLearning = isLearning;
 exports.author1 = author1;
 exports.author2 = author2;
@@ -859,8 +869,19 @@ exports.myString2 = myString2;
 exports.polishAdder = polishAdder;
 exports.$plus = $plus;
 exports.$ = $;
+exports.greeting = greeting;
+exports.aLongerGreeting = aLongerGreeting;
+exports.quotedString = quotedString;
+exports.multiLineQuotedString = multiLineQuotedString;
+exports.specialCharacters = specialCharacters;
+exports.world = world;
+exports.helloWorld = helloWorld;
+exports.accountBalance = accountBalance;
+exports.emailSubject = emailSubject;
+exports.lastLetter = lastLetter;
 exports.teamMember = teamMember;
 exports.position2d = position2d;
+exports.city1 = city1;
 exports.memberName = memberName;
 exports.memberAge = memberAge;
 exports.threeTuple = threeTuple;
@@ -868,20 +889,21 @@ exports.theAnswer = theAnswer;
 exports.firstTrainJourney = firstTrainJourney;
 exports.maxPassengers = maxPassengers;
 exports.secondTrainJourney = secondTrainJourney;
-exports.tastyMuesli = tastyMuesli;
+exports.frostedFlakes = frostedFlakes;
 exports.name = name;
 exports.amount = amount;
-exports.tastyChex = tastyChex;
+exports.chex = chex;
 exports.newObject = newObject;
 exports.newTruck = newTruck;
 exports.toyotaTundra = toyotaTundra;
 exports.toyotaSupra = toyotaSupra;
 exports.userPreferredAuth = userPreferredAuth;
+exports.gitUser1 = gitUser1;
+exports.gitUser2 = gitUser2;
 exports.newUser = newUser;
-exports.thingIsHere = thingIsHere;
 exports.isThingHere = isThingHere;
 exports.userIds = userIds;
-exports.newUserIds = newUserIds;
+exports.newUserIds1 = newUserIds1;
 exports.languages = languages;
 exports.signUpToNewsletter = signUpToNewsletter;
 exports.getEmailPrefs = getEmailPrefs;
@@ -891,14 +913,6 @@ exports.moveTo = moveTo;
 exports.getMessage = getMessage;
 exports.logMessage = logMessage;
 exports.logAnotherMessage = logAnotherMessage;
-exports.subtract = subtract;
-exports.subtractTwo = subtractTwo;
-exports.subtractFromThree = subtractFromThree;
-exports.subtractFive = subtractFive;
-exports.addOne = addOne;
-exports.divByTwo = divByTwo;
-exports.multByThree = multByThree;
-exports.pipedValue = pipedValue;
 exports.divide = divide;
 exports.divideBySix = divideBySix;
 exports.divideByTwo = divideByTwo;
@@ -908,6 +922,14 @@ exports.labeledDiv = labeledDiv;
 exports.labeledDivBySix = labeledDivBySix;
 exports.labeledDivByTwo = labeledDivByTwo;
 exports.greetPerson = greetPerson;
+exports.subtract = subtract;
+exports.subtractTwo = subtractTwo;
+exports.subtractFromThree = subtractFromThree;
+exports.subtractFive = subtractFive;
+exports.addOne = addOne;
+exports.divByTwo = divByTwo;
+exports.multByThree = multByThree;
+exports.pipedValue = pipedValue;
 exports.isMorning = isMorning;
 exports.newGreeting = newGreeting;
 exports.logSomething = logSomething;
@@ -917,6 +939,7 @@ exports.loopEnd = loopEnd;
 exports.dLoopStart = dLoopStart;
 exports.dLoopEnd = dLoopEnd;
 exports.testVariable = testVariable;
+exports.newDndPlayer = newDndPlayer;
 exports.loginMessage = loginMessage;
 exports.userId = userId;
 exports.alertMessage = alertMessage;
