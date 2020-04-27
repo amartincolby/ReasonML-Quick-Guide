@@ -1054,17 +1054,19 @@ switch (event) {
 };
 
 let importantNumbers = [42, 2001, 31459];
-let [answer, yearWeMakeContact, pi] = importantNumbers;
+// let [answer, yearWeMakeContact, pi] = importantNumbers;
 
-/** The above code triggers a non-exhaustive error because lists and arrays
- * are of potentially variable size. In this example, the list is a known fixed size,
- * so the error is unfounded. Compilation will still fail. This is another example
- * of enforced protection against null and undefined errors.
- * 
- * The idiomatically correct way to destructure entities of unknown size is through
- * pattern matching into a fixed-size tuple. While this may seem like unecessary
- * boilerplate, it is another example of Reason's rigid enforcement of type security.
- * */
+/* The above code triggers a non-exhaustive error because lists and arrays
+    are of potentially variable size. In this example, the list is a known fixed size,
+    so the error is unfounded. This is another example of enforced protection against
+    null and undefined errors.
+
+    This should only throw a warning, but there is a bug in Bucklescript at the moment
+    that causes a full compile failure. This bug exists as of April 26th, 2020.
+
+    The idiomatically correct way to destructure entities of unknown size is through
+    pattern matching into a fixed-size tuple. While this may seem like unecessary
+    boilerplate, it is another example of Reason's rigid enforcement of type security. */
 
 let (answer, yearWeMakeContact, pi) = switch (importantNumbers) {
     | [a, b, c] => (a, b, c)
