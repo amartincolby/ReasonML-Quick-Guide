@@ -121,6 +121,13 @@ let blockScope = () => {
     "Return string"
 }
 
+/* `let` bindings are also lexically scoped. If a `let` binding is declared again,
+    from that point forward the symbol will reference the later value. */
+
+let lexicalValue = "42";
+print_endline(lexicalValue); // "42"
+let lexicalValue = "To be or not to be.";
+print_endline(lexicalValue); // "To be or not to be."
 
 /*** Destructuring ***/
 
@@ -368,17 +375,16 @@ let emailSubject = "Hi " ++ name ++ ", you're a valued customer";
 
 let lastLetter = 'z';
 
-
 /*** > Integer ***/
 
-1 + 1;          // - : int = 2
-25 - 11;        // - : int = 11
-5 * 2 * 3;      // - : int = 30
-8 / 2;          // - : int = 4
+1 + 1;          // int = 2
+25 - 11;        // int = 11
+5 * 2 * 3;      // int = 30
+8 / 2;          // int = 4
 
 // Integer division will round results
-8 / 3;           // - : int = 2
-8 / 5;           // - : int = 1
+8 / 3;           // int = 2
+8 / 5;           // int = 1
 
 /* The StdLib provides modules for int32 and int64 operations. Unless these exact
     precisions are necessary, the standard int type provides the best
@@ -387,10 +393,14 @@ let lastLetter = 'z';
 
 /*** > Float ***/
 
-1.1 +. 1.5;     // - : float = 2.6
-18.0 -. 24.5;   // - : float = -6.5
-2.5 *. 2.0;     // - : float = 5.0
-16.0 /. 4.0;    // - : float = 4.0
+1.1 +. 1.5;     // float = 2.6
+18.0 -. 24.5;   // float = -6.5
+2.5 *. 2.0;     // float = 5.0
+16.0 /. 4.0;    // float = 4.0
+
+// Floats and integers can be formatted with underscores
+let formattedInt : int = 12_34_56;       // int = 123456
+let formattedFloat : float = 12_34_56.0; // float = 123456.0
 
 
 /*** > Tuple ***/
@@ -790,24 +800,30 @@ let logAnotherMessage = (~message as msg: string) => {
 /*** > Currying ***/
 
 /* Curring is the act of decomposing a function that takes multiple
-    arguments into a series of functions that each take one argument. */
+    arguments into a series of functions that each take one argument.
     
-// Functions are automatically curried and can be partially called
+    In practice, this is done automatically by calling a function with
+    fewer arguments than it has parameters. For example, if a function
+    has `n` parameters, and it is called with `x` arguments, a function
+    with `n - x` parameters is returned.
+    
+    All functions are curriable by default in ReasonML. */
+    
 let divide = (denom, numr) => numr / denom;
 let divideBySix = divide(6);
 let divideByTwo = divide(2);
 
-divide(3, 24);     /* - : int = 8  */
-divideBySix(128);  /* - : int = 21 */
-divideByTwo(10);   /* - : int = 5  */
+divide(3, 24);     /*  int = 8  */
+divideBySix(12);   /*  int = 2  */
+divideByTwo(10);   /*  int = 5  */
 
 // To partially call with deeper arguments, the anonymous variable `_` is used.
 
-let divSixBy = divide(_, 6);
-let divTenBy = divide(_, 10);
+let divideSixBy = divide(_, 6);
+let divideTenBy = divide(_, 10);
 
-divSixBy(2); /* - : int = 3  */
-divTenBy(2); /* - : int = 5  */
+divideSixBy(2); /*  int = 3  */
+divideTenBy(2); /*  int = 5  */
 
 // Labeled parameters allow currying without the need for the anonymous variable.
 
@@ -815,8 +831,8 @@ let labeledDiv = (~denom, ~numr) => numr / denom;
 let labeledDivBySix = labeledDiv(~denom = 6);
 let labeledDivByTwo = labeledDiv(~denom = 2);
 
-labeledDivBySix(~numr=36);  /* - : int = 6 */
-labeledDivByTwo(~numr=4);   /* - : int = 2  */
+labeledDivBySix(~numr=36);  /*  int = 6  */
+labeledDivByTwo(~numr=4);   /*  int = 2  */
 
 
 /*** > Optional Labeled Parameters/Arguments ***/
@@ -858,6 +874,9 @@ greetPerson(~name="Kate", ());
     output to another's input. Users of command line interfaces such as Bash will be
     accustomed to this pattern.
 
+    Since pipes, either first or last, require positional information to work, they
+    are incompatible with functions with labeled parameters. 
+
     People who are staying abreast of JavaScript development may notice that this
     syntax is currently in the experimental stage in the language specification.
     JavaScript is adopting many ideas from the ML line of languages. */
@@ -865,7 +884,7 @@ greetPerson(~name="Kate", ());
 let subtract = (x, y) => { x - y };
 let subtractTwo = subtract(_, 2);
 
-3 -> subtractTwo; // int 1
+3 -> subtractTwo; // int = 1
 
 /* The thin arrow syntax is called "pipe-first" since the value passed in
     is used as the first argument in the receiving function. */
@@ -879,12 +898,11 @@ let subtractFromThree = 3 -> subtract;
 
 let subtractFive = 5 |> subtract;
 
-// Pipes allow easy function chaining
 let addOne = a => a + 1;
 let divByTwo = a => a / 2;
 let multByThree = a => a * 3;
 
-let pipedValue = 3 -> addOne -> divByTwo -> multByThree; // int 6
+let pipedValue = 3 -> addOne -> divByTwo -> multByThree; // int = 6
 
 
 /*----------------------------------------------
@@ -953,7 +971,7 @@ for (x in loopStart to loopEnd) {
     print_string(" ");
 };
 
-// Reason allows slightly easier decrementing in loops with the `downto` statement.
+// Reason allows decrementing in loops with the `downto` statement.
 
 let dLoopStart = 42;
 let dLoopEnd = 1;
@@ -963,19 +981,43 @@ for (x in dLoopStart downto dLoopEnd) {
     print_string(" ");
 };
 
-/* While loop */
+/* Imperative loops are seen as bad practice because even in a secure, highly
+    symbolic language like Reason, fence post errors are possible. In the below,
+    the code will compile but result in an 'index out of bounds' error when
+    run because the final index called is 4. */
 
-let testVariable = ref(false);
+let testArray = [|1, 2, 3, 42|];
+let testArrayLength = Belt.Array.length(testArray);
+
+for (x in 0 to testArrayLength) {
+    print_int(testArray[x]);
+};
+
+/* While Loop */
+
+/* While Loops are more or less similar to other languages, but since a value
+    is immutable, a `ref()` wrapper must be used 
+
+    Just as with For Loops, While Loops should be avoided since the constraints
+    are not being set by the data under calculation. For Loops risk fence post
+    errors and While Loops risk infinite loops. In the below, if `testVariable`
+    were never set to false, the loop would not stop. */
+
+let testVariable = ref(true);
 while (testVariable^) {
-    print_endline("It's true.")
+    print_endline("It's true.");
+    testVariable := false;
 }
+print_endline("It's now false.");
 
 
 /*** > Pattern Matching ***/
 
-/* Pattern matching is Reason's crown jewel. It helps prevent all manner
+/* Pattern matching is ReasonML's crown jewel. It helps prevent all manner
     of errors and unintended behaviors and offers a profound competitive
-    advantage in comparison to other languages and tools.
+    advantage in comparison to other languages and tools. It's power is so
+    great, that almost all other major languages either have implemented,
+    or are in the process of implementing, pattern matching.
     
     Pattern matching uses decomposition of input to analyze the relationship
     of tokens to find set patterns. This stands in contrast to a direct
@@ -986,7 +1028,7 @@ while (testVariable^) {
 
     https://en.wikipedia.org/wiki/Pattern_matching
     
-    In Reason, as with many functional languages, pattern matching is used
+    In ReasonML, as with many functional languages, pattern matching is used
     for all comparisons. Sometimes this acts like common value comparisons in
     other languages, like `x === y` in JavaScript. But unlike simple comparisons,
     a pattern has a finite number of states, meaning that the compiler can warn
@@ -1095,29 +1137,30 @@ let aGreeting =
     with custom constructors. */
 
 // Define custom exceptions with the `exception` statement.
-exception Under_Age;
+exception Impossible_Age;
 
-type driver = {
-    name: string,
-    age: int,
-    height: int
+type patientDetails = {
+    name   : string,
+    age    : int,
+    height : int,
+    weight : float
 }
 
 // Trigger an exception with the `raise` call.
-let driveToTown = (driver: driver) =>
-  if (driver.age > 16) {
-    "We're in town";
+let validatePatientAge = (patient : patientDetails) =>
+  if (patient.age < 122 && patient.age > 0) {
+    "Now seeing " ++ patient.name ++ "."
   } else {
-    raise(Under_Age);
+    raise(Impossible_Age);
   };
 
-let evan = {name: "Evan", age: 14, height: 175};
+let newPatient = {name : "Jeanne Calment", age : 122, height : 150, weight : 55.0};
 
 // Pattern match on the exception Under_Age.
-switch (driveToTown(evan)) {
+switch (validatePatientAge(newPatient)) {
     | status => print_endline(status)
-    | exception Under_Age =>
-        print_endline(evan.name ++ " is too young to drive!")
+    | exception Impossible_Age =>
+        print_endline(newPatient.name ++ " - Invalid Age : " ++ string_of_int(newPatient.age) )
 };
 
 /* Try */
@@ -1126,8 +1169,8 @@ switch (driveToTown(evan)) {
     As such, they do not need the exception label. */
     
 let messageToEvan =
-    try (driveToTown(evan)) {
-    | Under_Age => evan.name ++ " is too young to drive!"
+    try (validatePatientAge(newPatient)) {
+    | Impossible_Age => newPatient.name ++ " - Invalid Age : " ++ string_of_int(newPatient.age)
 };
 
 /* It should be noted that in the above examples, exceptions were not needed.
@@ -1144,7 +1187,7 @@ let messageToEvan =
  */
  
 /* A module is essentially a namespace. A reasonable analog from other languages
-    is the concept of a class. */
+    is the concept of a class. Basically, it is a hunk of isolated code. */
 
 // Create a new module with the `module` statement.
 module Staff = {
@@ -1154,7 +1197,7 @@ module Staff = {
         | Other;
 
     type staffMember = {
-        employeeName: string,
+        employeeName : string,
         role,
     };
 
@@ -1163,13 +1206,13 @@ module Staff = {
   let getRoleDirectionMessage = staff =>
     switch (staff.role) {
         | Delivery => "Deliver it like you mean it!"
-        | Sales => "Sell it like only you can!"
-        | Other => "You're an important part of the team!"
+        | Sales    => "Sell it like only you can!"
+        | Other    => "You're an important part of the team!"
     };
 };
 
 // A module can be accessed with dot notation.
-let employee: Staff.staffMember = {employeeName: "Laura", role: Staff.Delivery};
+let employee : Staff.staffMember = { employeeName : "Wilma", role : Staff.Delivery };
 
 /* As stated, modules provide namespacing, meaning that what is within the scope
      of a module is not within the current working scope. To bring a module's
@@ -1192,17 +1235,17 @@ module NewStaff = {
     the scope of another module. While this may superficially seem similar to
     `open`, `include` actually copies the content of one module into another while
     still allowing for value overrides. */
-   
+      
 module SpecializedStaff = {
   include Staff;
 
-  let ceo: staffMember = {employeeName: "Reggie", role: Other};
+  let ceo: staffMember = {employeeName: "Barnie", role: Other};
   
   let defaultRole = Delivery; 
 
   let getMeetingTime = staff =>
     switch (staff) {
-        | Other => 11_15 /* - : int = 1115; Underscores are for formatting only  */
+        | Other => 11_15
         | _ => 9_30
     };
 };
@@ -1267,6 +1310,7 @@ module Module7 {
     which included Module1. Thus, `include` allows module chaining, whereas `open`
     only allows a parent-child relationship. */
 
+
 /*** Records, Variants, and Other Files ***/
 
 /* As stated, all files are by default modules. Because of this, unlike in other
@@ -1293,7 +1337,7 @@ module Module_in_external_file = { // From Module_in_external_file.re
     and `externalType` would usually be the only thing in the file. */
 
 module Current_working_file = {
-    let newThing: Module_in_external_file.externalVariant = Thing1;
+    let newThing : Module_in_external_file.externalVariant = Thing1;
 }
 
 /* All files intended for import must have unique names to ensure that the recursive
@@ -1311,26 +1355,31 @@ module Current_working_file = {
 /* By default, everything in a module is exported and made available to code that
     references it. To customize what pieces of a module are made visible, an interface must
     be created. This is also called a signature because every module has and projects a
-    signature, but is by default implicit. */
+    signature, but is by default implicit.
 
-// If an interface is contained within the same file as the module, the `type` statement is used.
-
-module type Module8Interface = {
-    let visibleThing: int;
-    let visibleFunction: (int, int) => int;
-};
-
-/* Interfaces are like a contract. They dictate what a module must provide to be of a type.
+    Interfaces are a specification. They dictate what a module must provide to be of a type.
     As such, module types must be explicitly declared on modules that fulfill all requirements
     of that type. If Module8 did not provide `visibleThing` and `visibleFunction`, an error
     would be produced.
     
     Interfaces are only inclusive, not exclusive in their requirements. Below, Module8 has
-    another pair of value and function which does not cause a warning, it only causes an unused
-    value warning since, while the interface does not exclude their inclusion, it does not expose
-    them to the outside. */
+    a second value/function pair which does not cause a failure, it only causes an unused
+    value warning since, while the interface does not exclude their existence, it does not expose
+    them to the outside.
 
-module Module8: Module8Interface = {
+    If an interface is contained in a separate file, it must be inside an interface file
+    with an identical name as the module file but with the extension `.rei`. In this
+    scenario, the type of the module does not need to be explicitly declared. The
+    compiler knows to bind the signature to the module because of the matching file names.
+    
+    If contained within the same file as the module, the `type` statement is used. */
+
+module type Module8Interface = {
+    let visibleThing : int;
+    let visibleFunction : (int, int) => int;
+};
+
+module Module8 : Module8Interface = {
     let visibleThing = 2001;
     let visibleFunction = (x,y) => {
         x * y
@@ -1350,7 +1399,7 @@ module Module9 = {
 
 // Module interfaces can be in-lined. 
 
-module Module10: {
+module Module10 : {
     let func1: (int,int) => int;
     let func2: (string,string) => string;
 } = {
@@ -1373,10 +1422,7 @@ if (aThing == State2) {
     print_endline("Thing!")
 }
 
-/* if an interface is contained in a separate file, it must be inside an interface file
-    with an identical name as the module file but with the extension `.rei`. In this
-    scenario, the type of the module does not need to be explicitly declared. The
-    compiler knows to bind the signature to the module because of the matching file names. */
+
 
 /*----------------------------------------------
  * JavaScript Interoperation
@@ -1555,7 +1601,7 @@ let make = (~food) => {
     mathematical functions. This means that for the same inputs, the program will always return
     the same output. This results in the problem of how a program is to have state or handle effects.
     Common programs have a great many effects, such as logs, timers, I/O, etc. Functional
-    languages solve these problems with through the use of monads. 
+    languages solve these problems through the use of monads. 
     
     ReasonML, and OCaml before it, made practical concessions to the needs of developers by allowing,
     and having language structures for, effects and state. It did not forget the lessons of monads,

@@ -30,6 +30,12 @@ function blockScope(param) {
   return "Return string";
 }
 
+console.log("42");
+
+var lexicalValue = "To be or not to be.";
+
+console.log(lexicalValue);
+
 console.log("Teacher");
 
 Pervasives.print_int(101);
@@ -351,11 +357,11 @@ function divideByTwo(param) {
   return param / 2 | 0;
 }
 
-function divSixBy(__x) {
+function divideSixBy(__x) {
   return Caml_int32.div(6, __x);
 }
 
-function divTenBy(__x) {
+function divideTenBy(__x) {
   return Caml_int32.div(10, __x);
 }
 
@@ -423,13 +429,29 @@ for(var x$1 = 42; x$1 >= 1; --x$1){
   Pervasives.print_string(" ");
 }
 
+var testArray = [
+  1,
+  2,
+  3,
+  42
+];
+
+var testArrayLength = testArray.length;
+
+for(var x$2 = 0; x$2 <= testArrayLength; ++x$2){
+  Pervasives.print_int(Caml_array.caml_array_get(testArray, x$2));
+}
+
 var testVariable = {
-  contents: false
+  contents: true
 };
 
 while(testVariable.contents) {
   console.log("It's true.");
+  testVariable.contents = false;
 };
+
+console.log("It's now false.");
 
 var loginMessage = "May your enemies crumble before your might.";
 
@@ -484,20 +506,21 @@ if (maybeName !== undefined) {
   aGreeting = "No one to greet.";
 }
 
-var Under_Age = Caml_exceptions.create("Guide-ReasonMLQuickGuide.Under_Age");
+var Impossible_Age = Caml_exceptions.create("Guide-ReasonMLQuickGuide.Impossible_Age");
 
-function driveToTown(driver) {
-  if (driver.age > 16) {
-    return "We're in town";
+function validatePatientAge(patient) {
+  if (patient.age < 122 && patient.age > 0) {
+    return "Now seeing " + (patient.name + ".");
   } else {
-    throw Under_Age;
+    throw Impossible_Age;
   }
 }
 
-var evan = {
-  name: "Evan",
-  age: 14,
-  height: 175
+var newPatient = {
+  name: "Jeanne Calment",
+  age: 122,
+  height: 150,
+  weight: 55.0
 };
 
 var exit = 0;
@@ -505,12 +528,12 @@ var exit = 0;
 var status;
 
 try {
-  status = driveToTown(evan);
+  status = validatePatientAge(newPatient);
   exit = 1;
 }
 catch (exn){
-  if (exn === Under_Age) {
-    console.log("Evan is too young to drive!");
+  if (exn === Impossible_Age) {
+    console.log("Jeanne Calment - Invalid Age : " + String(122));
   } else {
     throw exn;
   }
@@ -523,11 +546,11 @@ if (exit === 1) {
 var messageToEvan;
 
 try {
-  messageToEvan = driveToTown(evan);
+  messageToEvan = validatePatientAge(newPatient);
 }
 catch (exn$1){
-  if (exn$1 === Under_Age) {
-    messageToEvan = "Evan is too young to drive!";
+  if (exn$1 === Impossible_Age) {
+    messageToEvan = "Jeanne Calment - Invalid Age : " + String(122);
   } else {
     throw exn$1;
   }
@@ -570,7 +593,7 @@ function getMeetingTime(staff) {
 }
 
 var SpecializedStaff_ceo = {
-  employeeName: "Reggie",
+  employeeName: "Barnie",
   role: /* Other */2
 };
 
@@ -671,18 +694,18 @@ function calculate(numbers) {
   return jsReduce($$Array.of_list(numbers));
 }
 
-var testArray = [
+var testArray$1 = [
   "1",
   "2",
   "3"
 ];
 
-Belt_Array.forEach(testArray, (function (element) {
+Belt_Array.forEach(testArray$1, (function (element) {
         console.log(element);
         return /* () */0;
       }));
 
-Belt_Array.forEach(testArray, (function (element) {
+Belt_Array.forEach(testArray$1, (function (element) {
         console.log(element);
         return /* () */0;
       }));
@@ -703,7 +726,7 @@ function Guide(Props) {
                 }, " Eat " + (String(food) + " ")));
 }
 
-var x$2 = 5;
+var x$3 = 5;
 
 var myBlock = /* () */0;
 
@@ -754,6 +777,10 @@ var specialCharacters = "This is fine. !@#'\"`$%^&*()";
 var accountBalance = "You have \$500.00";
 
 var lastLetter = /* "z" */122;
+
+var formattedInt = 123456;
+
+var formattedFloat = 123456.0;
 
 var teamMember = /* tuple */[
   "John",
@@ -831,7 +858,7 @@ var yearWeMakeContact = match[1];
 var pi = match[2];
 
 var employee = {
-  employeeName: "Laura",
+  employeeName: "Wilma",
   role: /* Delivery */0
 };
 
@@ -839,11 +866,12 @@ var aThing = /* State2 */1;
 
 var make = Guide;
 
-exports.x = x$2;
+exports.x = x$3;
 exports.addInts = addInts;
 exports.intAdder = intAdder;
 exports.myBlock = myBlock;
 exports.blockScope = blockScope;
+exports.lexicalValue = lexicalValue;
 exports.aTuple = aTuple;
 exports.classNumber = classNumber;
 exports.bjorn = bjorn;
@@ -879,6 +907,8 @@ exports.helloWorld = helloWorld;
 exports.accountBalance = accountBalance;
 exports.emailSubject = emailSubject;
 exports.lastLetter = lastLetter;
+exports.formattedInt = formattedInt;
+exports.formattedFloat = formattedFloat;
 exports.teamMember = teamMember;
 exports.position2d = position2d;
 exports.city1 = city1;
@@ -916,8 +946,8 @@ exports.logAnotherMessage = logAnotherMessage;
 exports.divide = divide;
 exports.divideBySix = divideBySix;
 exports.divideByTwo = divideByTwo;
-exports.divSixBy = divSixBy;
-exports.divTenBy = divTenBy;
+exports.divideSixBy = divideSixBy;
+exports.divideTenBy = divideTenBy;
 exports.labeledDiv = labeledDiv;
 exports.labeledDivBySix = labeledDivBySix;
 exports.labeledDivByTwo = labeledDivByTwo;
@@ -938,6 +968,7 @@ exports.loopStart = loopStart;
 exports.loopEnd = loopEnd;
 exports.dLoopStart = dLoopStart;
 exports.dLoopEnd = dLoopEnd;
+exports.testArrayLength = testArrayLength;
 exports.testVariable = testVariable;
 exports.newDndPlayer = newDndPlayer;
 exports.loginMessage = loginMessage;
@@ -952,9 +983,9 @@ exports.pi = pi;
 exports.isJohn = isJohn;
 exports.maybeName = maybeName;
 exports.aGreeting = aGreeting;
-exports.Under_Age = Under_Age;
-exports.driveToTown = driveToTown;
-exports.evan = evan;
+exports.Impossible_Age = Impossible_Age;
+exports.validatePatientAge = validatePatientAge;
+exports.newPatient = newPatient;
 exports.messageToEvan = messageToEvan;
 exports.Staff = Staff;
 exports.employee = employee;
@@ -976,6 +1007,6 @@ exports.aThing = aThing;
 exports.getAccountID = getAccountID;
 exports.jsReduce = jsReduce;
 exports.calculate = calculate;
-exports.testArray = testArray;
+exports.testArray = testArray$1;
 exports.make = make;
 /*  Not a pure module */
