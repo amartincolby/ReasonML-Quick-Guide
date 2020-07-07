@@ -17,6 +17,10 @@ This guide started as an extension of a more lightweight guide written by ["Seth
 I also want to bring note to the small but dedicated group over at the [ReasonML forums](https://reasonml.chat/). Go there. Just say HI for Pete's sake. Engage! Life springs from activity, and we need more activity, because the technology itself is solid and ready for production use.
 
 # Further Information
+- [ReasonML Community Docs](https://reasonml.org/) *An attempt to unify all documentation in a single, manageable place.*
+- [ReasonML Twitter](https://twitter.com/reasonml) *Best stream for constant updates*
+- [ReasonConf Twitter](https://twitter.com/reasonconf)
+- [Hongbo Zhang Twitter](https://twitter.com/bobzhang1988) *Lead developer of Bucklescript*
 - [Reason Package Index, aka Redex](https://redex.github.io/)
 - [Official Reason Docs](https://reasonml.github.io/docs/en/what-and-why)
 - [Bucklescript docs](https://bucklescript.github.io/)
@@ -28,9 +32,11 @@ I also want to bring note to the small but dedicated group over at the [ReasonML
 
 # The Guide
 
-Reason is a syntax layer over OCaml. Under the covers, Reason *is* OCaml. It is broadly similar to OCaml but makes changes that bring its syntax better in alignment with C and thus JavaScript. During compilation, Reason is translated into an OCaml abstract syntax tree. The BuckleScript compiler is then used to turn that AST into optimized and easy-to-read JavaScript.
+ReasonML is a syntax layer over OCaml. Under the covers, ReasonML *is* OCaml. It is broadly similar to OCaml but makes changes that bring its syntax better in alignment with C and thus JavaScript. During compilation, Reason is translated into an OCaml abstract syntax tree. The BuckleScript compiler is then used to turn that AST into optimized and easy-to-read JavaScript.
 
-Reason's *raison d'être* is to give JavaScript developers a language that is familiar but cleaner, does not require explicit type declarations, and provides algebraically guaranteed type safety. Further, as a syntax layer, code written in Reason can be readily compiled to OCaml and run as a native executable, paving the way for easy Web Assembly and cross-platform development.
+Reason's *raison d'être* is to give JavaScript developers a language that is familiar but cleaner, does not require explicit type declarations, and provides algebraically guaranteed type safety.Further, as a syntax layer, code written in Reason can be readily compiled to OCaml and run as a native executable, paving the way for easy Web Assembly and cross-platform development.
+
+While idiomatic ReasonML is written in a functional manner, I want to stress that understanding functional patterns is not necessary. Simply writing most existing JavaScript patterns in ReasonML will provide significant benefits. 
 
 The below text is valid ReasonML code. It is a copy of the code in the src directory. 
 
@@ -38,22 +44,24 @@ The below text is valid ReasonML code. It is a copy of the code in the src direc
 /* Comment blocks start with slash-star,
    and end with star-slash. */
 // Line comments begin with a double slash.
-// Expressions do not need to be terminated with a semicolon, but it is best practice;
+// Expressions need not be terminated with a semicolon, but it is best practice;
 
 /*** A note on types ***/
 
-/* ReasonML makes little distinction between primitive types and what could be called
-    user-defined types or structs. They are simply "things" represented by symbols.
+/* ReasonML makes little distinction between primitive types and what could be
+    called user-defined types or structs. They are simply "things" represented
+    by symbols.
 
-    The below type is an abstract type, meaning that the symbol has no structure attached
-    to it. Any program using this type does not need to know its structure just so long
-    as usage of the type is consistent. Basically, programs can use symbols without
-    knowing what they mean. */
+    The below type is an abstract type, meaning that the symbol has no structure
+    attached to it. Any program using this type does not need to know its
+    structure just so long as usage of the type is consistent. Basically,
+    programs can use symbols without knowing what they mean. */
 
 type kwyjibo;
 
-/* The below type is a concrete type with a defined structure. These will appear frequently
-    in this guide since any record must have an associated concrete type. */
+/* The below type is a concrete type with a defined structure. These will appear
+    frequently in this guide since any record must have an associated concrete
+    type. */
 
 type thing = {
     value1 : string,
@@ -66,27 +74,30 @@ type thing = {
  *----------------------------------------------
  */
  
-/* In ReasonML, the word "variable" is used as convention but is inaccurate. Variables do
-    not vary, i.e. they are immutable. As with many functional languages, variables are more
-    accurately referred to as bindings, since what is happening is that a value is being
-    irrevocably bound to a symbol, not merely assigned.
+/* In ReasonML, the word "variable" is used as convention but is inaccurate.
+    Variables do not vary, i.e. they are immutable. As with many functional
+    languages, variables are more accurately referred to as bindings, since what
+    is happening is that a value is being irrevocably bound to a symbol, not
+    merely assigned.
 
-    Symbols and values, whether they be functions, primitives, or more complex structures,
-    are usually bound with the `let` keyword. Names must begin with a lowercase letter or
-    underscore. 
+    Symbols and values, whether they be functions, primitives, or more complex
+    structures, are usually bound with the `let` keyword. Names must begin with
+    a lowercase letter or underscore. 
 
-    All values must have a static type, but these types often do not need to be declared in use.
-    In most cases, they can be inferred by the compiler via Hindley-Milner classification. */
+    All values must have a static type, but these types often do not need to be
+    declared in use. In most cases, they can be inferred by the compiler via
+    Hindley-Milner classification. */
 
-// The compiler will infer that x is an int.
-let x = 5;
+let x = 5;                // : int
+let y = 42.0;             // : float
+let z = "Dinner for one"; // : string
 
 // Functions will likewise infer parameter and return types.
-let addInts = (a, b) => a + b; // inferred int for all values
+let addInts = (a, b) => { a + b }; // inferred int for all values via `+` operator.
 
 // Types can be functions
 type intFunction = (int, int) => int;
-let intAdder : intFunction = (x, y) => x + y;
+let intAdder : intFunction = (x, y) => { x + y };
 
 // Let bindings are block scoped with braces `{}`.
 if (true) {
@@ -100,9 +111,9 @@ let myBlock = {
 };
 
 /* The list of reserved words is broadly similar to OCaml, the list for which is
-    available here http://caml.inria.fr/pub/docs/manual-ocaml-312/manual044.html.
-    The Reason-specific list is under development, with the current words available
-    in the ReasonML source code, on Github.
+    available here: http://caml.inria.fr/pub/docs/manual-ocaml-312/manual044.html.
+    The Reason-specific list is under development, with the current words
+    available in the ReasonML source code, on Github.
 
     https://github.com/facebook/reason/blob/master/src/reason-parser/reason_declarative_lexer.mll#L85-L144
 
@@ -112,8 +123,8 @@ let myBlock = {
     raised on variables declared at the global or module level. 
     
     There are two kinds of unused variable. A suspicious unused variable is one
-    that has been bound with `let` or `as`. An innocuous variable is one that has
-    not been been bound with one of the primary binding verbs. */
+    that has been bound with `let` or `as`. An innocuous variable is one that
+    has not been been bound with one of the primary binding verbs. */
 
 let blockScope = () => {
     let variable = 42;          // This triggers a warning.
@@ -129,6 +140,7 @@ print_endline(lexicalValue); // "42"
 let lexicalValue = "To be or not to be.";
 print_endline(lexicalValue); // "To be or not to be."
 
+
 /*** Destructuring ***/
 
 // Data structures can be "destructured" for assignment to individual variables.
@@ -139,8 +151,8 @@ print_endline(name);
 print_int(classNumber);
 
 type person = {
-  firstName : string,
-  age : int,
+    firstName : string,
+    age : int,
 };
 
 // Variable extractions from records must match field names.
@@ -158,10 +170,10 @@ let {firstName : dName, age : _} = bjorn;
 /*** Type annotation ***/
 
 // Type annotations can be added when inference does not suffice.
-let y: int = 5;
+let a : int = 5;
 
 // Function parameters and returns can be annotated.
-let add2 = (a: int, b: int): int => a + b;
+let add2 = (a : int, b : int): int => a + b;
 
 // A type can be aliased using the `type` keyword.
 type companyId = int;
@@ -180,10 +192,11 @@ let copyOfMyMutableNumber = myMutableNumber^;
 /*** as ***/
 
 /* The second way to perform a symbol/value binding is with `as`. Where a `let`
-    binding binds a right-hand value to a left-hand symbol, `as` binds left to right.
-    This syntax exists because of the common practice of "piping" something from one
-    segment of code into the following segment. This stands in contrast to the
-    procedural practice of variable assignment and then, later, variable use.
+    binding binds a right-hand value to a left-hand symbol, `as` binds left to
+    right. This syntax exists because of the common practice of "piping"
+    something from one segment of code into the following segment. This stands
+    in contrast to the procedural practice of variable assignment and then,
+    later, variable use.
 
     Unlike `let`, which must be declared procedurally just like variable declarations
     in most other common languages, the `as` binding can only be declared functionally,
@@ -288,7 +301,7 @@ let myString2 = "A world without string is chaos.";
 "A string" == "A string";  // - : bool = true
 42 === 42;                 // - : bool = true
 42 == 42;                  // - : bool = true
-// 42 === "A string" // Error
+// 42 === "A string"       // Error
 
 
 /*** Operator Assignment ***/
@@ -504,7 +517,7 @@ let chex = { // Note how the type did not need to be explicitly declared
     While objects in Reason are superficially similar to JavaScript objects, they
     do not directly transpile to them. */
 
-// Objects are accessed with hash notation #.
+// Objects are accessed with hash notation `#`.
 let newObject = {
     val aNumber = ref(42);
     pri increment = (num: int) => aNumber := aNumber^ + num;
@@ -522,10 +535,10 @@ let newObject = {
 
 type truck = {
     .
-    buildTruck : (~make:string, ~model:string) => string
+    buildTruck : (~make : string, ~model : string) => string
 };
 
-let newTruck: truck = {
+let newTruck : truck = {
     val drive = 4;
     pub buildTruck = (~make, ~model) => {j|You built a new $make $model with $drive-wheel drive.|j};
 
@@ -1226,10 +1239,6 @@ module NewStaff = {
     let newEmployee: staffMember = {employeeName: "Fred", role: Other};
 }
 
-/* The above code will trigger a compiler warning for a shadowed module. That is
-    because when a module is in the same file as the working scope, there is no
-    need to explicitly open the module for type references. */
-
 /* Continuing the analogy of a module as a class, a module can be extended using
     the `include` command. Using `include` brings the contents of one module into
     the scope of another module. While this may superficially seem similar to
@@ -1461,6 +1470,25 @@ getAccountID
  *----------------------------------------------
  */
 
+ /* A note on BuckleScript */
+
+ /* The ReasonML community has been thrown into a degree of chaos with the
+    release of a new Bucklescript-specific ReasonML syntax. Basically, if you
+    are targeting JavaScript with your ReasonML code, it will become more
+    specifically targeted to that JavaScript and less well-suited for native
+    work. The extent to which this will affect current projects and endeavors
+    is, regardless of what many are saying, unknown.
+ 
+    The changes can be found here:
+    https://reasonml.org/blog/bucklescript-8-1-new-syntax
+
+    Docs are here:
+    https://reasonml.org/docs/reason-compiler/latest/new-bucklescript-syntax
+ 
+    A listing of many concerns can be found here:
+    https://reasonml.chat/t/bucklescript-8-1-new-syntax-option/2379 */
+    
+
 /* As earlier stated, Bucklescript is the transpiler for turning an OCaml syntax tree into
     JavaScript. When ReasonML compiles, it is turned into an OCaml syntax tree and can then
     be pulled into all existing OCaml toolchains. While ReasonML contains many of its own
@@ -1600,8 +1628,8 @@ let make = (~food) => {
 /* ReasonML is a functional language, meaning that processes are based on the evaluations of
     mathematical functions. This means that for the same inputs, the program will always return
     the same output. This results in the problem of how a program is to have state or handle effects.
-    Common programs have a great many effects, such as logs, timers, I/O, etc. Functional
-    languages solve these problems through the use of monads. 
+    Common programs have a great many effects, such as logs, timers, I/O, etc. Pure functional
+    languages like Haskell solve these problems through the use of monads. 
     
     ReasonML, and OCaml before it, made practical concessions to the needs of developers by allowing,
     and having language structures for, effects and state. It did not forget the lessons of monads,
@@ -1613,7 +1641,7 @@ let make = (~food) => {
     certain problems. Their utility has become apparent, with other languages adopting common monads
     like Option. Scala, Kotlin, C#, and Java all now have optional values as part of the language.
     Indeed, monads generally are becoming common. JavaScript has perhaps the most widely used monad in
-    computer history in the form of the promise.
+    computer history in the form of the Promise.
     
     The purpose of this section therefore is to bring focus to their genesis and hopefully explain
     why knowledge of monads, and category theory more broadly, is an extremely fruitful course of

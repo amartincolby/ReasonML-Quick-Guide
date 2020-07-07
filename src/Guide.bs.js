@@ -728,6 +728,10 @@ function Guide(Props) {
 
 var x$3 = 5;
 
+var y = 42.0;
+
+var z = "Dinner for one";
+
 var myBlock = /* () */0;
 
 var aTuple = /* tuple */[
@@ -754,7 +758,7 @@ var cName = "Bjorn";
 
 var dName = "Bjorn";
 
-var y = 5;
+var a = 5;
 
 var myId = 101;
 
@@ -867,6 +871,8 @@ var aThing = /* State2 */1;
 var make = Guide;
 
 exports.x = x$3;
+exports.y = y;
+exports.z = z;
 exports.addInts = addInts;
 exports.intAdder = intAdder;
 exports.myBlock = myBlock;
@@ -881,7 +887,7 @@ exports.bName = bName;
 exports.bAge = bAge;
 exports.cName = cName;
 exports.dName = dName;
-exports.y = y;
+exports.a = a;
 exports.add2 = add2;
 exports.myId = myId;
 exports.myMutableNumber = myMutableNumber;
