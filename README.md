@@ -20,11 +20,9 @@ I also want to bring note to the small but dedicated group over at the [ReasonML
 - [ReasonML Community Docs](https://reasonml.org/) *An attempt to unify all documentation in a single, manageable place.*
 - [ReasonML Twitter](https://twitter.com/reasonml) *Best stream for constant updates*
 - [ReasonConf Twitter](https://twitter.com/reasonconf)
-- [Hongbo Zhang Twitter](https://twitter.com/bobzhang1988) *Lead developer of Bucklescript*
 - [Reason Package Index, aka Redex](https://redex.github.io/)
 - [Official Reason Docs](https://reasonml.github.io/docs/en/what-and-why)
-- [Bucklescript docs](https://bucklescript.github.io/)
-- [ReasonReact Docs](https://reasonml.github.io/reason-react)
+- [ReScript docs](https://rescript-lang.org)
 - [Exploring ReasonML](http://reasonmlhub.com/exploring-reasonml/toc.html) *Perhaps the best docs currently available*
 - [Try Reason](https://reasonml.github.io/en/try)
 - [Real World OCaml](http://dev.realworldocaml.org/toc.html)
@@ -32,9 +30,11 @@ I also want to bring note to the small but dedicated group over at the [ReasonML
 
 # The Guide
 
-ReasonML is a syntax layer over OCaml. Under the covers, ReasonML *is* OCaml. It is broadly similar to OCaml but makes changes that bring its syntax better in alignment with C and thus JavaScript. During compilation, Reason is translated into an OCaml abstract syntax tree. The BuckleScript compiler is then used to turn that AST into optimized and easy-to-read JavaScript.
+ReasonML is a syntax layer over OCaml. Under the covers, ReasonML *is* OCaml. It is broadly similar to OCaml but makes changes that bring its syntax better in alignment with C and thus JavaScript. During compilation, Reason is translated into an OCaml abstract syntax tree. The ReScript compiler is then used to turn that AST into optimized and easy-to-read JavaScript.
 
 Reason's *raison d'être* is to give JavaScript developers a language that is familiar but cleaner, does not require explicit type declarations, and provides algebraically guaranteed type safety.Further, as a syntax layer, code written in Reason can be readily compiled to OCaml and run as a native executable, paving the way for easy Web Assembly and cross-platform development.
+
+Unfortunately, a cultural fracture has lately occured in which the community has been split between those who want ReasonML to remain primarily its own language and those who want ReasonML to exist primarily as a replacement for JavaScript. The conflict was such that the lead developer of Bucklescript actually left Twitter. I mention this to help alleviate any confusion for those who may be finding coflicting information in the scant documentation online. The result is that Bucklescript, which was the tool that turned ReasonML/OCaml into JavaScript, is now ReScript, which is something of its own language. To say that it is _inspired_ by ReasonML is not inaccurate, although the bulk of the differences are mostly syntactic. The details of how to use ReScript will be discussed later in the tutorial. For my part, I am disappointed since a major attraction for me was a single language for multiple places, but I also appreciate their desire to more directly target the JavaScript world.
 
 While idiomatic ReasonML is written in a functional manner, I want to stress that understanding functional patterns is not necessary. Simply writing most existing JavaScript patterns in ReasonML will provide significant benefits. 
 
@@ -1478,6 +1478,9 @@ getAccountID
     specifically targeted to that JavaScript and less well-suited for native
     work. The extent to which this will affect current projects and endeavors
     is, regardless of what many are saying, unknown.
+
+    What can be said for sure is that everything below is officially deprecated
+    and will slowly fade into that great git repo in the sky.
  
     The changes can be found here:
     https://reasonml.org/blog/bucklescript-8-1-new-syntax

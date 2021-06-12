@@ -1435,6 +1435,9 @@ getAccountID
     specifically targeted to that JavaScript and less well-suited for native
     work. The extent to which this will affect current projects and endeavors
     is, regardless of what many are saying, unknown.
+
+    What can be said for sure is that everything below is officially deprecated
+    and will slowly fade into that great git repo in the sky.
  
     The changes can be found here:
     https://reasonml.org/blog/bucklescript-8-1-new-syntax
