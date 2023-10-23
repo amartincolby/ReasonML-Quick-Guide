@@ -1,5 +1,19 @@
 ![ReasonML Logo](reason_logo.png)
 
+## 2023 Update
+
+Sadly, the fracture of ReasonML and ReScript has basically killed the language and ecosystem. There is still a fair amount of geeky interest as demonstrated in the official Discord channel, but this has translated to little industry uptake, nor will it experience any. PureScript is even geekier, Elm has better adoption, and TypeScript is good enough for most use cases while offering incalculably better support and tooling. But the real nail in the coffin, though, is the rise of Rust.
+
+Rust was heavily inspired by the ML line of languages, and anyone skilled in OCaml or ReasonML will likely find it familiar, thus obviating the syntactic and semantic benefits of ReasonML. Further, Rust offers the original promise of ReasonML, to wit the ability to write code that can target either the browser or native code. This was ReasonML's real party piece, but once ReScript abandoned this pipeline to focus entirely on targeting JavaScript, its one advantage became simply being a better language. As anyone will tell you, better languages rarely win the language war. It is simply not enough of a benefit to make people abandon more popular languages.
+
+Rust brings everything. Its native performance is on par with C and C++, its syntax is approachable for those coming from JavaScript and TypeScript, and its semantics are vastly superior. JavaScript tools are increasingly switching to Rust for the massive performance increase it brings. And it has become the language of choice for WebAssembly development.
+
+That said, it is not yet a perfect replacement. ReasonML and ReScript easily transpile directly to JavaScript. Indeed, that is their purpose. The semantic overlap of OCaml and JavaScript is easier to reconcile than Rust and JavaScript. Because of this, there have been no entirely successful attempts at creating a Rust->JavaScript transpiler.
+
+But if one sets their horizon further out, it becomes apparent that WebAssembly is either the outright future of web development, or a major part of it. Combined with its growing server-side ecosystem, if one is going to expand outside of the usual suspects of front-end engineering, I think that Rust is the only choice. Indeed, I think that Rust is such an excellent language with such glorious prospects that anyone working in n-tier, client-server development _must_ learn Rust.
+
+The tldr of this is that I no longer think ReasonML or ReScript is worth learning. Pure OCaml is certainly worth learning and will likely stay that way for a long time, but its geeky side projects are of little value. If you are a web developer, I instead recommend enhancing TypeScript skills while growing into Rust. The future is good.
+
 # ReasonML Quick Guide
 
 ReasonML is a fantastic language. It is, in my eyes, a refinment of OCaml that eliminates many of the syntactic peculiarities of that language that are the result, I assume, of being French.
